@@ -1,0 +1,6 @@
+TodasSaturadasNomencladas/
+brochure_page_*.png
+*.pdf
+node_modules/
+.firebase/
+compress_images.py

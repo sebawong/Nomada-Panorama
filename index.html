@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>NOMADA Palermo — Vistas</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
+<script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --cream:#f7f3ec;--warm-white:#faf8f4;
+  --charcoal:#1c1c1c;--charcoal-light:#3a3a3a;
+  --sage:#7d8e6e;--sage-light:#96a888;
+  --terra:#c45e2c;
+  --text:#2c2c2c;--text-dim:#8a8580;
+  --card-bg:rgba(22,22,22,.88);
+  --available:#7d8e6e;--sold:#c45e2c;--reserved:#d4a24c;--blocked:#b5aea6;
+  --sidebar-w:340px;
+}
+html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--charcoal);color:#e8e4de;overflow:hidden;-webkit-font-smoothing:antialiased}
+#app{display:flex;height:100vh;height:100dvh}
+
+/* ═══ SIDEBAR ═══ */
+#sidebar{
+  width:var(--sidebar-w);min-width:var(--sidebar-w);background:var(--charcoal);color:#e8e4de;
+  display:flex;flex-direction:column;z-index:10;
+  border-right:1px solid rgba(255,255,255,.06);
+  transition:transform .35s cubic-bezier(.4,0,.2,1);
+}
+.sidebar-header{padding:20px 20px 16px}
+.logo{font-size:13px;letter-spacing:4px;font-weight:400;text-transform:uppercase;margin-bottom:18px;color:#e8e4de}
+.logo span{color:var(--sage-light);font-weight:300}
+#search{
+  width:100%;padding:11px 14px;border:1px solid rgba(255,255,255,.1);border-radius:6px;
+  background:rgba(255,255,255,.06);color:#e8e4de;font-size:14px;outline:none;
+  transition:border .2s,background .2s;font-family:inherit;
+}
+#search:focus{border-color:var(--sage-light);background:rgba(255,255,255,.1)}
+#search::placeholder{color:rgba(255,255,255,.35)}
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.filters select{
+  flex:1;min-width:calc(33% - 5px);padding:9px 8px;border:1px solid rgba(255,255,255,.1);border-radius:6px;
+  background:#2a2a2a;color:#e8e4de;font-size:12px;outline:none;
+  cursor:pointer;font-family:inherit;-webkit-appearance:none;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 8px center;padding-right:22px;
+}
+.filters select option{background:#2a2a2a;color:#e8e4de}
+.unit-count{padding:10px 20px;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.4);border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06)}
+#unit-list{flex:1;overflow-y:auto;padding:4px 8px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.12) transparent}
+#unit-list::-webkit-scrollbar{width:5px}
+#unit-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:3px}
+.unit-item{
+  padding:11px 14px;border-radius:6px;cursor:pointer;
+  display:flex;justify-content:space-between;align-items:center;
+  transition:background .15s;margin-bottom:1px;font-size:14px;
+}
+.unit-item:hover{background:rgba(255,255,255,.07)}
+.unit-item.active{background:var(--sage);color:#fff}
+.unit-item .unit-name{font-weight:600;letter-spacing:.3px;min-width:60px}
+.unit-item .unit-meta{
+  font-size:11px;color:rgba(255,255,255,.45);display:flex;align-items:center;gap:8px;
+  white-space:nowrap;
+}
+.unit-item.active .unit-meta{color:rgba(255,255,255,.8)}
+.status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.status-dot.Available{background:var(--available)}
+.status-dot.Sold{background:var(--sold)}
+.status-dot.Reserved{background:var(--reserved)}
+.status-dot.Blocked,.status-dot.Inactive{background:rgba(255,255,255,.25)}
+
+/* ═══ MAIN ═══ */
+#main-content{flex:1;position:relative;overflow:hidden;background:#111}
+
+/* Welcome */
+#welcome{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;padding:40px;
+  background:var(--charcoal);z-index:2;
+}
+#welcome .welcome-logo{font-size:14px;letter-spacing:5px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:12px}
+#welcome h2{font-size:26px;font-weight:300;margin-bottom:6px;color:#e8e4de;letter-spacing:.5px}
+#welcome p{font-size:14px;color:rgba(255,255,255,.35);font-weight:300}
+
+/* ═══ PANORAMIC (always fills main area) ═══ */
+#pano-container{position:absolute;inset:0;z-index:1}
+.pnlm-container{background:#111 !important}
+
+/* ═══ INFO CARD (floating over panoramic) ═══ */
+#info-card{
+  display:none;position:absolute;bottom:24px;left:24px;z-index:5;
+  width:320px;
+  background:var(--card-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-radius:14px;border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 12px 48px rgba(0,0,0,.4);
+  color:#e8e4de;overflow:hidden;
+  transition:opacity .25s,transform .25s;
+}
+#info-card.visible{display:block;animation:cardIn .3s ease-out}
+@keyframes cardIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+.card-top{display:flex;gap:14px;padding:16px 18px 14px}
+.card-info{flex:1;min-width:0}
+.card-info h2{font-size:16px;font-weight:600;letter-spacing:.3px;margin-bottom:2px}
+.card-info .card-sub{font-size:12px;color:rgba(255,255,255,.4);margin-bottom:10px}
+.card-info .card-sub span{margin-right:8px}
+
+/* Floor plan thumbnail */
+.card-plan{
+  width:110px;height:90px;border-radius:8px;overflow:hidden;flex-shrink:0;
+  background:rgba(255,255,255,.95);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;position:relative;border:1px solid rgba(255,255,255,.1);
+}
+.card-plan img{width:100%;height:100%;object-fit:contain;padding:4px}
+.card-plan .plan-zoom{
+  position:absolute;inset:0;background:rgba(0,0,0,.4);display:flex;
+  align-items:center;justify-content:center;opacity:0;transition:opacity .2s;
+  font-size:20px;color:#fff;
+}
+.card-plan:hover .plan-zoom{opacity:1}
+
+/* Data rows */
+.card-data{
+  display:grid;grid-template-columns:1fr 1fr;gap:0;
+  border-top:1px solid rgba(255,255,255,.07);font-size:11px;
+}
+.card-data .d-item{
+  padding:7px 18px;border-bottom:1px solid rgba(255,255,255,.05);
+  display:flex;justify-content:space-between;
+}
+.card-data .d-item:nth-child(odd){border-right:1px solid rgba(255,255,255,.05)}
+.card-data .d-label{color:rgba(255,255,255,.4)}
+.card-data .d-val{font-weight:500}
+.card-total{
+  padding:8px 18px;display:flex;justify-content:space-between;
+  font-size:12px;font-weight:700;
+  border-top:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.04);
+}
+
+/* Expand panoramic button */
+.card-actions{padding:10px 18px 14px;display:flex;gap:8px}
+.btn-expand{
+  flex:1;padding:9px;border:none;border-radius:6px;
+  background:var(--sage);color:#fff;font-size:12px;font-weight:600;
+  cursor:pointer;font-family:inherit;letter-spacing:.3px;
+  transition:background .15s;text-align:center;
+}
+.btn-expand:hover{background:var(--sage-light)}
+.btn-expand:active{transform:scale(.98)}
+
+/* ═══ FULLSCREEN PANO OVERLAY ═══ */
+#fullscreen-overlay{
+  display:none;position:fixed;inset:0;z-index:100;background:#000;
+}
+#fullscreen-overlay.visible{display:block}
+#fullscreen-pano{width:100%;height:100%}
+#fs-close{
+  position:absolute;top:16px;right:16px;width:44px;height:44px;border-radius:50%;
+  background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.15);color:#fff;
+  font-size:22px;cursor:pointer;z-index:105;display:flex;align-items:center;
+  justify-content:center;transition:background .15s;backdrop-filter:blur(4px);
+}
+#fs-close:hover{background:rgba(0,0,0,.7)}
+#fs-label{
+  position:absolute;bottom:20px;left:50%;transform:translateX(-50%);
+  background:rgba(0,0,0,.55);backdrop-filter:blur(8px);color:#fff;
+  padding:8px 20px;border-radius:20px;font-size:13px;z-index:105;
+  pointer-events:none;letter-spacing:.3px;white-space:nowrap;
+}
+
+/* ═══ PLAN MODAL ═══ */
+#plan-modal{
+  display:none;position:fixed;inset:0;z-index:110;
+  background:rgba(0,0,0,.8);backdrop-filter:blur(6px);
+  align-items:center;justify-content:center;cursor:pointer;
+}
+#plan-modal.visible{display:flex}
+#plan-modal img{max-width:90vw;max-height:90vh;object-fit:contain;border-radius:10px;box-shadow:0 8px 40px rgba(0,0,0,.5)}
+
+/* ═══ Spinner ═══ */
+.spinner{width:28px;height:28px;border:2px solid rgba(255,255,255,.1);border-top-color:var(--sage);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pano-loading{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:rgba(255,255,255,.4);font-size:13px;z-index:0}
+
+/* ═══ MOBILE ═══ */
+.mobile-toggle{
+  display:none;position:fixed;top:12px;left:12px;z-index:50;
+  width:42px;height:42px;border-radius:8px;background:rgba(0,0,0,.5);
+  border:1px solid rgba(255,255,255,.1);color:#e8e4de;font-size:18px;cursor:pointer;
+  box-shadow:0 2px 12px rgba(0,0,0,.3);align-items:center;justify-content:center;
+  backdrop-filter:blur(8px);
+}
+.mobile-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9}
+.mobile-backdrop.visible{display:block}
+
+@media(max-width:900px){:root{--sidebar-w:310px}}
+@media(max-width:768px){
+  .mobile-toggle{display:flex}
+  #sidebar{
+    position:fixed;left:0;top:0;bottom:0;
+    width:85vw;max-width:360px;min-width:0;
+    transform:translateX(-100%);z-index:55;
+    box-shadow:4px 0 24px rgba(0,0,0,.3);
+  }
+  #sidebar.open{transform:translateX(0)}
+  #info-card{
+    bottom:12px;left:12px;right:12px;width:auto;max-width:none;
+  }
+  .card-plan{width:90px;height:72px}
+  #fs-label{font-size:11px;padding:6px 14px;bottom:12px}
+}
+@media(max-width:480px){
+  #sidebar{width:100vw;max-width:100vw}
+  .filters{flex-wrap:wrap}
+  .filters select{min-width:calc(50% - 4px)}
+  .card-top{flex-direction:column;gap:10px}
+  .card-plan{width:100%;height:100px}
+}
+</style>
+</head>
+<body>
+
+<button class="mobile-toggle" id="mobile-toggle" aria-label="Menu">
+  <svg width="18" height="14" viewBox="0 0 18 14" fill="none"><path d="M0 1h18M0 7h18M0 13h18" stroke="currentColor" stroke-width="1.5"/></svg>
+</button>
+<div class="mobile-backdrop" id="mobile-backdrop"></div>
+
+<div id="app">
+
+<aside id="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">N&#332;MADA <span>Palermo</span></div>
+    <input type="text" id="search" placeholder="Buscar unidad... (ej: A1005, B701)" autocomplete="off">
+    <div class="filters">
+      <select id="tower-filter">
+        <option value="">Todas las torres</option>
+        <option value="A">Torre A</option>
+        <option value="B">Torre B</option>
+      </select>
+      <select id="floor-filter">
+        <option value="">Todos los pisos</option>
+      </select>
+      <select id="amb-filter">
+        <option value="">Ambientes</option>
+      </select>
+      <select id="area-filter">
+        <option value="">Metraje</option>
+        <option value="0-50">Hasta 50 m&sup2;</option>
+        <option value="50-70">50 - 70 m&sup2;</option>
+        <option value="70-90">70 - 90 m&sup2;</option>
+        <option value="90-999">90+ m&sup2;</option>
+      </select>
+      <select id="status-filter">
+        <option value="">Estado</option>
+        <option value="Available">Disponible</option>
+        <option value="Reserved">Reservado</option>
+        <option value="Sold">Vendido</option>
+        <option value="Blocked">Bloqueado</option>
+        <option value="Inactive">Inactivo</option>
+      </select>
+    </div>
+  </div>
+  <div class="unit-count" id="unit-count">Cargando...</div>
+  <div id="unit-list"></div>
+</aside>
+
+<main id="main-content">
+
+  <div id="welcome">
+    <div class="welcome-logo">N&#332;MADA PALERMO</div>
+    <h2>Buscador de Vistas</h2>
+    <p>Selecciona una unidad para ver su vista panoramica</p>
+  </div>
+
+  <!-- Inline panoramic always fills main -->
+  <div id="pano-container"></div>
+  <div class="pano-loading" id="pano-loading" style="display:none"><div class="spinner"></div>Cargando vista...</div>
+
+  <!-- Floating info card -->
+  <div id="info-card">
+    <div class="card-top">
+      <div class="card-info">
+        <h2 id="c-title"></h2>
+        <div class="card-sub">
+          <span id="c-floor"></span>
+          <span id="c-orient"></span>
+          <span id="c-amb"></span>
+        </div>
+      </div>
+      <div class="card-plan" id="card-plan-btn" title="Ver plano completo">
+        <img id="c-plan-img" alt="Plano">
+        <div class="plan-zoom">&#x1F50D;</div>
+      </div>
+    </div>
+    <div class="card-data">
+      <div class="d-item"><span class="d-label">Cubierta</span><span class="d-val" id="c-cub"></span></div>
+      <div class="d-item"><span class="d-label">Semicub.</span><span class="d-val" id="c-semi"></span></div>
+      <div class="d-item"><span class="d-label">Amenities</span><span class="d-val" id="c-amen"></span></div>
+      <div class="d-item"><span class="d-label">Cocina</span><span class="d-val" id="c-coc"></span></div>
+    </div>
+    <div class="card-total">
+      <span>Superficie total</span>
+      <span id="c-total"></span>
+    </div>
+    <div class="card-actions">
+      <button class="btn-expand" id="btn-fullscreen">Pantalla completa</button>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<!-- Fullscreen panoramic overlay -->
+<div id="fullscreen-overlay">
+  <button id="fs-close" title="Cerrar">&times;</button>
+  <div id="fullscreen-pano"></div>
+  <div id="fs-label"></div>
+</div>
+
+<!-- Plan zoom modal -->
+<div id="plan-modal"><img id="plan-modal-img" alt="Plano"></div>
+
+<script>
+const POSITION_TO_GROUP = {
+  'A01':1,'A02':2,'A03':3,'A04':3,'A05':4,'A06':4,
+  'A07':5,'A08':5,'B01':6,'B02':6,'B03':7,'B04':7,
+  'B05':8,'B06':9,'B07':10,
+};
+
+let units = [];
+let selectedUnit = null;
+let inlineViewer = null;
+let fsViewer = null;
+const IMAGE_DIR = 'panoramas';
+
+function parseUnit(code) {
+  const tower = code[0], num = code.slice(1);
+  const floor = parseInt(num.length === 3 ? num[0] : num.slice(0, -2));
+  const pos = num.slice(-2);
+  return { tower, floor, pos };
+}
+
+function getPanoramicPath(unit) {
+  const { tower, floor, pos } = parseUnit(unit.unit);
+  const group = POSITION_TO_GROUP[tower + pos];
+  if (!group) return null;
+  let imgFloor = Math.max(3, Math.min(13, floor));
+  if (group === 4 && imgFloor > 12) imgFloor = 12;
+  return `${IMAGE_DIR}/${group}-${imgFloor}.jpg`;
+}
+
+const STATUS_LABELS = {
+  Available:'Disponible',Sold:'Vendido',Reserved:'Reservado',
+  Blocked:'Bloqueado',Inactive:'Inactivo'
+};
+
+/* ═══ DATA ═══ */
+async function loadUnits() {
+  try {
+    const res = await fetch('https://nw-app-dashboard.web.app/api/getUnits');
+    units = await res.json();
+    units.sort((a, b) => {
+      if (a.nucleo !== b.nucleo) return a.nucleo.localeCompare(b.nucleo);
+      return (a.pisos || 0) - (b.pisos || 0) || a.unit.localeCompare(b.unit);
+    });
+    populateFilters();
+    renderList();
+  } catch (e) {
+    document.getElementById('unit-count').textContent = 'Error al cargar';
+  }
+}
+
+function populateFilters() {
+  const floors = [...new Set(units.map(u => parseInt(u.floor)))].sort((a, b) => a - b);
+  const floorSel = document.getElementById('floor-filter');
+  floors.forEach(f => {
+    const opt = document.createElement('option');
+    opt.value = f; opt.textContent = `Piso ${f}`;
+    floorSel.appendChild(opt);
+  });
+  const ambs = [...new Set(units.map(u => u.ambientes))].sort((a, b) => parseInt(a) - parseInt(b));
+  const ambSel = document.getElementById('amb-filter');
+  ambs.forEach(a => {
+    const opt = document.createElement('option');
+    opt.value = a; opt.textContent = `${a} amb.`;
+    ambSel.appendChild(opt);
+  });
+}
+
+function getFilteredUnits() {
+  const q = document.getElementById('search').value.toLowerCase().trim();
+  const tower = document.getElementById('tower-filter').value;
+  const floor = document.getElementById('floor-filter').value;
+  const amb = document.getElementById('amb-filter').value;
+  const area = document.getElementById('area-filter').value;
+  const status = document.getElementById('status-filter').value;
+  return units.filter(u => {
+    if (q && !u.unit.toLowerCase().includes(q) && !u.name.toLowerCase().replace(/-/g,'').includes(q.replace(/-/g,''))) return false;
+    if (tower && u.nucleo !== tower) return false;
+    if (floor && u.floor !== floor) return false;
+    if (amb && u.ambientes !== amb) return false;
+    if (area) {
+      const [min, max] = area.split('-').map(Number);
+      if (u.supTotal < min || u.supTotal > max) return false;
+    }
+    if (status && u.state !== status) return false;
+    return true;
+  });
+}
+
+function renderList() {
+  const filtered = getFilteredUnits();
+  document.getElementById('unit-count').textContent = `${filtered.length} unidades`;
+  document.getElementById('unit-list').innerHTML = filtered.map(u => `
+    <div class="unit-item${selectedUnit && selectedUnit.unit === u.unit ? ' active' : ''}" data-unit="${u.unit}">
+      <span class="unit-name">${u.name}</span>
+      <span class="unit-meta">
+        P${u.floor} &middot; ${u.ambientes}amb &middot; ${u.supTotal}m&sup2;
+        <span class="status-dot ${u.state}" title="${STATUS_LABELS[u.state] || u.state}"></span>
+      </span>
+    </div>
+  `).join('');
+}
+
+/* ═══ SELECT UNIT ═══ */
+function selectUnit(code) {
+  // Close fullscreen if open
+  closeFullscreen();
+
+  selectedUnit = units.find(u => u.unit === code);
+  if (!selectedUnit) return;
+
+  closeSidebar();
+  renderList();
+
+  // Hide welcome
+  document.getElementById('welcome').style.display = 'none';
+
+  // Update info card
+  document.getElementById('c-title').textContent = `Unidad ${selectedUnit.name}`;
+  document.getElementById('c-floor').textContent = `Piso ${selectedUnit.floor}`;
+  document.getElementById('c-orient').textContent = selectedUnit.banoPrincipal || '';
+  document.getElementById('c-amb').textContent = `${selectedUnit.ambientes} amb.`;
+  document.getElementById('c-cub').textContent = `${selectedUnit.supCubierta} m\u00B2`;
+  document.getElementById('c-semi').textContent = `${selectedUnit.supSemiCubierta} m\u00B2`;
+  document.getElementById('c-amen').textContent = `${selectedUnit.supAmenities} m\u00B2`;
+  document.getElementById('c-coc').textContent = selectedUnit.cocina || '-';
+  document.getElementById('c-total').textContent = `${selectedUnit.supTotal} m\u00B2`;
+
+  // Floor plan thumbnail
+  const planImg = document.getElementById('c-plan-img');
+  if (selectedUnit.file) {
+    planImg.src = selectedUnit.file;
+    planImg.style.display = 'block';
+  } else {
+    planImg.style.display = 'none';
+  }
+
+  // Show card
+  const card = document.getElementById('info-card');
+  card.classList.remove('visible');
+  // Force reflow for re-animation
+  void card.offsetWidth;
+  card.classList.add('visible');
+
+  // Load inline panoramic
+  loadInlinePanoramic();
+}
+
+function loadInlinePanoramic() {
+  if (!selectedUnit) return;
+  const path = getPanoramicPath(selectedUnit);
+
+  const loading = document.getElementById('pano-loading');
+
+  if (inlineViewer) { inlineViewer.destroy(); inlineViewer = null; }
+
+  if (!path) {
+    loading.style.display = 'flex';
+    loading.innerHTML = 'Sin vista disponible para esta unidad';
+    return;
+  }
+
+  loading.style.display = 'flex';
+  loading.innerHTML = '<div class="spinner"></div>Cargando vista...';
+
+  inlineViewer = pannellum.viewer('pano-container', {
+    type: 'equirectangular',
+    panorama: path,
+    autoLoad: true,
+    compass: false,
+    showControls: false,
+    mouseZoom: true,
+    hfov: 110,
+    minHfov: 50,
+    maxHfov: 120,
+    autoRotate: -1.5,
+    autoRotateInactivityDelay: 2000,
+    friction: 0.15,
+    yaw: 0,
+    pitch: -5,
+    showFullscreenCtrl: false,
+    strings: { loadingLabel: '' },
+  });
+
+  inlineViewer.on('load', () => { loading.style.display = 'none'; });
+  inlineViewer.on('error', () => { loading.innerHTML = 'Error al cargar la vista'; });
+}
+
+/* ═══ FULLSCREEN ═══ */
+function openFullscreen() {
+  if (!selectedUnit) return;
+  const path = getPanoramicPath(selectedUnit);
+  if (!path) return;
+
+  const overlay = document.getElementById('fullscreen-overlay');
+  overlay.classList.add('visible');
+  document.getElementById('fs-label').textContent =
+    `Vista desde ${selectedUnit.name} \u2014 Piso ${selectedUnit.floor}`;
+
+  if (fsViewer) { fsViewer.destroy(); fsViewer = null; }
+
+  // Copy current view angles from inline viewer
+  let yaw = 0, pitch = 0, hfov = 100;
+  if (inlineViewer) {
+    try { yaw = inlineViewer.getYaw(); pitch = inlineViewer.getPitch(); hfov = inlineViewer.getHfov(); } catch(e){}
+  }
+
+  fsViewer = pannellum.viewer('fullscreen-pano', {
+    type: 'equirectangular',
+    panorama: path,
+    autoLoad: true,
+    compass: false,
+    showControls: true,
+    mouseZoom: true,
+    hfov: hfov,
+    minHfov: 40,
+    maxHfov: 120,
+    autoRotate: -1.5,
+    autoRotateInactivityDelay: 3000,
+    friction: 0.15,
+    yaw: yaw,
+    pitch: pitch,
+    showFullscreenCtrl: false,
+    strings: { loadingLabel: 'Cargando vista...' }
+  });
+}
+
+function closeFullscreen() {
+  const overlay = document.getElementById('fullscreen-overlay');
+  if (!overlay.classList.contains('visible')) return;
+  overlay.classList.remove('visible');
+  if (fsViewer) { fsViewer.destroy(); fsViewer = null; }
+}
+
+/* ═══ PLAN MODAL ═══ */
+function openPlanModal() {
+  if (!selectedUnit || !selectedUnit.file) return;
+  document.getElementById('plan-modal-img').src = selectedUnit.file;
+  document.getElementById('plan-modal').classList.add('visible');
+}
+
+/* ═══ SIDEBAR MOBILE ═══ */
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('mobile-backdrop').classList.add('visible');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('mobile-backdrop').classList.remove('visible');
+}
+
+/* ═══ EVENTS ═══ */
+
+// Unit list
+document.getElementById('unit-list').addEventListener('click', e => {
+  const item = e.target.closest('.unit-item');
+  if (item) selectUnit(item.dataset.unit);
+});
+
+// Fullscreen button
+document.getElementById('btn-fullscreen').addEventListener('click', openFullscreen);
+
+// Close fullscreen
+document.getElementById('fs-close').addEventListener('click', closeFullscreen);
+
+// Plan thumbnail -> zoom modal
+document.getElementById('card-plan-btn').addEventListener('click', openPlanModal);
+
+// Plan modal close on click anywhere
+document.getElementById('plan-modal').addEventListener('click', () => {
+  document.getElementById('plan-modal').classList.remove('visible');
+});
+
+// Mobile toggle
+document.getElementById('mobile-toggle').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.contains('open') ? closeSidebar() : openSidebar();
+});
+document.getElementById('mobile-backdrop').addEventListener('click', closeSidebar);
+
+// Escape key
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if (document.getElementById('plan-modal').classList.contains('visible')) {
+      document.getElementById('plan-modal').classList.remove('visible');
+    } else if (document.getElementById('fullscreen-overlay').classList.contains('visible')) {
+      closeFullscreen();
+    }
+  }
+});
+
+// Filters
+document.getElementById('search').addEventListener('input', renderList);
+['tower-filter','floor-filter','amb-filter','area-filter','status-filter'].forEach(id =>
+  document.getElementById(id).addEventListener('change', renderList)
+);
+
+loadUnits();
+</script>
+</body>
+</html>
