@@ -29,8 +29,8 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
   transition:transform .35s cubic-bezier(.4,0,.2,1);
 }
 .sidebar-header{padding:20px 20px 16px}
-.logo{margin-bottom:18px;color:#e8e4de;display:flex;align-items:center}
-.logo svg{height:28px;width:auto}
+.logo{margin-bottom:18px;color:#e8e4de;display:flex;justify-content:center}
+.logo svg{height:52px;width:auto}
 #search{
   width:100%;padding:11px 14px;border:1px solid rgba(255,255,255,.1);border-radius:6px;
   background:rgba(255,255,255,.06);color:#e8e4de;font-size:14px;outline:none;
@@ -39,6 +39,29 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
 #search:focus{border-color:var(--sage-light);background:rgba(255,255,255,.1)}
 #search::placeholder{color:rgba(255,255,255,.35)}
 .filters{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+#area-slider-wrap{
+  width:100%;padding:4px 0;
+}
+#area-label{font-size:11px;color:rgba(255,255,255,.55);margin-bottom:4px;display:block}
+.slider-row{position:relative;height:20px}
+.slider-row input[type=range]{
+  position:absolute;left:0;top:0;width:100%;height:20px;
+  -webkit-appearance:none;appearance:none;background:none;pointer-events:none;margin:0;
+}
+.slider-row input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;height:14px;width:14px;border-radius:50%;
+  background:var(--sage);cursor:pointer;pointer-events:auto;margin-top:-5px;
+}
+.slider-row input[type=range]::-webkit-slider-runnable-track{
+  height:4px;background:rgba(255,255,255,.15);border-radius:2px;
+}
+.slider-row input[type=range]::-moz-range-thumb{
+  height:14px;width:14px;border-radius:50%;border:none;
+  background:var(--sage);cursor:pointer;pointer-events:auto;
+}
+.slider-row input[type=range]::-moz-range-track{
+  height:4px;background:rgba(255,255,255,.15);border-radius:2px;
+}
 .filters select{
   flex:1;min-width:calc(33% - 5px);padding:9px 8px;border:1px solid rgba(255,255,255,.1);border-radius:6px;
   background:#2a2a2a;color:#e8e4de;font-size:12px;outline:none;
@@ -233,7 +256,7 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
 
 <aside id="sidebar">
   <div class="sidebar-header">
-    <div class="logo"><svg viewBox="0 0 360 60" fill="none" xmlns="http://www.w3.org/2000/svg"><g stroke="#e8e4de" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3,50 V8 L29,50 V8"/><circle cx="56" cy="30" r="20"/><line x1="45" y1="3" x2="67" y2="3"/><path d="M90,50 V8 L107,40 L124,8 V50"/><path d="M140,50 L155,8 L170,50"/><line x1="145" y1="38" x2="165" y2="38"/><path d="M184,50 V8"/><path d="M184,8 C218,8 218,50 184,50"/><path d="M232,50 L247,8 L262,50"/><line x1="237" y1="38" x2="257" y2="38"/></g><g fill="#e8e4de"><path d="M280,44 L298,10 L305,10 L287,44Z"/><path d="M298,10 L316,44 L309,44 L298,17Z"/><path d="M309,44 L327,10 L334,10 L316,44Z"/><path d="M327,10 L342,38 L336,44 L334,10Z" opacity=".45"/><path d="M328,14 L340,14 L340,26Z" opacity=".35"/></g><g fill="#e8e4de" font-family="'Segoe UI',system-ui,sans-serif" font-size="12" letter-spacing="4" font-weight="300"><text x="160" y="58" text-anchor="middle" opacity=".55" fill="#e8e4de" stroke="none">PALERMO</text></g></svg></div>
+    <div class="logo"><svg viewBox="0 0 1399.57 328.78" xmlns="http://www.w3.org/2000/svg"><g fill="#e8e4de"><polygon points="1238.04 152.43 1173.68 194.48 1137.55 139.09 1235.08 75.36 1315.35 119.46 1337.3 57.87 1399.57 80.03 1364.55 178.46 1317.29 195.96 1238.04 152.43"/><path d="M469.9,202.45l-44.21-97.87-21.97,97.24c-1.02,4.51-5.91,6.23-9.87,5.48-3.66-.69-7.11-4.68-6.03-9.54l29.24-132.39c.48-2.18,2.88-3.97,4.68-4.01s3.95,1.59,4.87,3.62l47.35,105.15,48.16-106.76c.81-1.79,3.04-3.33,4.53-3.37,1.87-.05,4.46,1.7,4.96,4.02l29.37,134.27c1.05,4.79-3.09,8.43-6.39,9.07-4.64.9-9.19-1.32-10.27-6.28l-21.54-98.36-44.05,99.08c-.61,1.36-3,3.12-4.25,3.14s-3.32-1.25-4.57-2.48Z"/><path d="M352.34,129.78c0,44.83-36.34,81.16-81.16,81.16s-81.16-36.34-81.16-81.16,36.34-81.16,81.16-81.16,81.16,36.34,81.16,81.16ZM334.29,129.8c0-34.9-28.29-63.19-63.19-63.19s-63.19,28.29-63.19,63.19,28.29,63.19,63.19,63.19,63.19-28.29,63.19-63.19Z"/><path d="M17.14,197.77c0,5.91-2.8,9.37-7.9,9.93C5.58,208.11,0,205.46,0,200.28V68.42c0-2.93,3.15-5.52,5.12-6.09,2.51-.73,6.32-.3,8.37,1.82l104.62,107.44.09-108.09c0-5.49,4.06-8.61,8.42-8.63,5.45-.03,8.55,3.7,8.55,9.55v127.82c-.01,3.38-1.58,6.3-3.95,7.68s-6.7,1.66-9.06-.74L17.25,92.44l-.11,105.34Z"/><path d="M899.92,118.47c6.89,46.3-27.39,89.11-72.2,89.17l-32.97.05c-5.77,0-9.61-4.65-9.61-10.48l.03-132.75c0-5.97,4.64-9.56,9.88-9.55l28.12.05c39.06.07,70.96,24.62,76.75,63.51ZM883.07,128.8c-.91-28.95-20.91-51.22-49.19-55.42-10.43-1.55-20.91-1.49-31.56-1.31v118.05s28.67-.7,28.67-.7c31.21-3.58,53.07-28.94,52.08-60.62Z"/><path d="M698.14,162.04l-61.54-.14-17.72,40.08c-1.93,4.36-5.79,6.52-10.22,5.27-4-1.13-7.38-5.96-5.24-10.88l59.41-136.25c.77-1.75,3.3-3.16,4.82-3.1,1.38.06,3.53,1.78,4.36,3.66l59.67,135.91c2.02,4.59-1.09,9.12-5.03,10.62s-8.95-.04-10.89-4.53l-17.61-40.63ZM690.52,144.74l-23.18-52.93-23.33,53.1,46.51-.17Z"/><path d="M1031.33,162.03l-61.53-.11-18.1,40.89c-1.9,4.28-6.68,5.77-10.7,4.12-3.28-1.35-6.36-5.93-4.42-10.38l58.79-134.85c.81-1.86,2.96-3.57,4.35-3.76,1.7-.23,4.83,1.19,5.72,3.22l59.73,136.08c1.87,4.25-2.08,8.74-4.76,9.71-4.37,1.59-8.84.22-11.2-3.71l-17.88-41.22ZM1023.9,145.04l-23.38-53.27-23.5,53.44,46.88-.17Z"/><path d="M953.55,295.78l-6.61,28.59c-.3,1.32-2.69,3.02-4.14,2.83-1.66-.21-3.27-2.59-3.04-4.44l9.21-41.67c.72-1.05,1.87-2.36,2.72-2.76s3.01,1.12,3.41,2l14,30.99,14.42-31.71c.41-.5,2.51-2.47,3.15-1.93l2.69,2.28,9.33,42.73c-.11,1.66-1.15,3.95-2.36,4.37-1.76.62-4.6-.98-4.99-2.74l-6.5-29.32-12.61,28.18c-.39.87-1.97,2.51-2.72,2.3-.94-.26-2.51-1.3-3.32-2.02l-12.65-27.69Z"/><path d="M1066.79,301.1c0,15.29-12.39,27.68-27.68,27.68s-27.68-12.39-27.68-27.68,12.39-27.68,27.68-27.68,27.68,12.39,27.68,27.68ZM1058.9,301.08c0-10.93-8.86-19.8-19.8-19.8s-19.8,8.86-19.8,19.8,8.86,19.8,19.8,19.8,19.8-8.86,19.8-19.8Z"/><path d="M918.74,325.89l-13.52-20.35-.57,18.38c-.05,1.72-2.71,3.48-4.01,3.31-1.84-.23-3.55-2.66-3.54-4.83l.18-46.87c7.13-1.01,13.63-1.06,19.98.67,5.94,1.62,8.57,7.39,8.77,13.04.26,7.83-3.8,13.82-12.35,15.24l10.79,16.61c.83,1.27.41,4.39-.61,5.31s-4.3.68-5.1-.52ZM916.41,295.13c2.7-2.42,2.5-8.99-.17-10.74-3.11-2.03-7.29-2.07-11.42-2.06v14.89c4.04.27,8.65.54,11.58-2.09Z"/><path d="M292.15,16.65h-41.99c-5.08.02-8.73-2.32-9.44-7.31C240.17,5.44,242.8-.02,248.14,0l46.96.14c4.95.01,6.88,6.13,6.31,9.55-.74,4.49-4.31,6.96-9.26,6.96Z"/><path d="M785.09,312.35l-19.15-.05-5.74,12.85c-.54,1.22-3.33,2.24-4.41,1.92-1.29-.38-2.47-2.75-2.49-4.56l19.12-43.91c.86-.84,2.28-2.01,3.17-2.03s2.26,1.44,2.95,2.34l18.65,42.45c.69,1.76.12,4.66-1.18,5.36-1.55.84-4.9-.11-5.48-1.48l-5.46-12.89ZM781.6,304.51l-6.14-13.81-6.25,13.95,12.39-.13Z"/><path d="M876.8,302.29l-16.98.03v17.56s16.42-.07,16.42-.07c1.35,0,3.6,1.8,3.8,3.11.27,1.73-1.84,4.5-3.7,4.46l-23.77-.49-.13-48.55c0-1.52,2.33-3.49,3.71-3.48l20.01.02c1.38,0,3.54,1.87,3.76,3.17.29,1.73-1.83,4.37-3.47,4.37l-16.69-.04.2,12.76,17.24.05c1.18,0,2.82,2.52,2.83,3.62s-1.86,3.49-3.22,3.49Z"/><path d="M725.19,305.08l-.07,18.39c0,1.95-2.53,4.07-4.39,3.73s-3.08-2.61-3.07-4.9l.19-46.94c7.06-.68,13.49-.97,19.47.77,6.39,1.86,9.21,8,9.05,14.19-.19,6.87-4.11,12.67-11.21,14.07l-9.96.69ZM735.47,296.13c4.19-2.23,4.28-9.55.73-11.96-2.86-1.94-7.34-1.93-11.03-1.89v15.42c3.22,0,7.4-.03,10.3-1.58Z"/><path d="M833.06,319.63c1.62.01,3.97,2.53,3.75,4.08-.24,1.67-2.73,3.82-4.37,3.77l-19.18-.56-.19-47.77c0-1.79,1.92-4.31,3.5-4.44,1.45-.12,3.99,2.34,3.99,3.84v40.99s12.49.08,12.49.08Z"/></g></svg></div>
     <input type="text" id="search" placeholder="Buscar unidad... (ej: A1005, B701)" autocomplete="off">
     <div class="filters">
       <select id="tower-filter">
@@ -247,13 +270,13 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
       <select id="amb-filter">
         <option value="">Ambientes</option>
       </select>
-      <select id="area-filter">
-        <option value="">Metraje</option>
-        <option value="0-50">Hasta 50 m&sup2;</option>
-        <option value="50-70">50 - 70 m&sup2;</option>
-        <option value="70-90">70 - 90 m&sup2;</option>
-        <option value="90-999">90+ m&sup2;</option>
-      </select>
+      <div id="area-slider-wrap">
+        <label id="area-label">Metraje: todos</label>
+        <div class="slider-row">
+          <input type="range" id="area-min" min="0" max="200" value="0" step="1">
+          <input type="range" id="area-max" min="0" max="200" value="200" step="1">
+        </div>
+      </div>
       <select id="status-filter">
         <option value="">Estado</option>
         <option value="Available">Disponible</option>
@@ -271,7 +294,7 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
 <main id="main-content">
 
   <div id="welcome">
-    <svg class="welcome-svg" viewBox="0 0 360 60" fill="none" xmlns="http://www.w3.org/2000/svg"><g stroke="rgba(255,255,255,.55)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3,50 V8 L29,50 V8"/><circle cx="56" cy="30" r="20"/><line x1="45" y1="3" x2="67" y2="3"/><path d="M90,50 V8 L107,40 L124,8 V50"/><path d="M140,50 L155,8 L170,50"/><line x1="145" y1="38" x2="165" y2="38"/><path d="M184,50 V8"/><path d="M184,8 C218,8 218,50 184,50"/><path d="M232,50 L247,8 L262,50"/><line x1="237" y1="38" x2="257" y2="38"/></g><g fill="rgba(255,255,255,.55)"><path d="M280,44 L298,10 L305,10 L287,44Z"/><path d="M298,10 L316,44 L309,44 L298,17Z"/><path d="M309,44 L327,10 L334,10 L316,44Z"/><path d="M327,10 L342,38 L336,44 L334,10Z" opacity=".45"/><path d="M328,14 L340,14 L340,26Z" opacity=".35"/></g><g font-family="'Segoe UI',system-ui,sans-serif" font-size="12" letter-spacing="4" font-weight="300"><text x="160" y="58" text-anchor="middle" fill="rgba(255,255,255,.35)" stroke="none">PALERMO</text></g></svg>
+    <svg class="welcome-svg" viewBox="0 0 1399.57 328.78" xmlns="http://www.w3.org/2000/svg"><g fill="rgba(255,255,255,.55)"><polygon points="1238.04 152.43 1173.68 194.48 1137.55 139.09 1235.08 75.36 1315.35 119.46 1337.3 57.87 1399.57 80.03 1364.55 178.46 1317.29 195.96 1238.04 152.43"/><path d="M469.9,202.45l-44.21-97.87-21.97,97.24c-1.02,4.51-5.91,6.23-9.87,5.48-3.66-.69-7.11-4.68-6.03-9.54l29.24-132.39c.48-2.18,2.88-3.97,4.68-4.01s3.95,1.59,4.87,3.62l47.35,105.15,48.16-106.76c.81-1.79,3.04-3.33,4.53-3.37,1.87-.05,4.46,1.7,4.96,4.02l29.37,134.27c1.05,4.79-3.09,8.43-6.39,9.07-4.64.9-9.19-1.32-10.27-6.28l-21.54-98.36-44.05,99.08c-.61,1.36-3,3.12-4.25,3.14s-3.32-1.25-4.57-2.48Z"/><path d="M352.34,129.78c0,44.83-36.34,81.16-81.16,81.16s-81.16-36.34-81.16-81.16,36.34-81.16,81.16-81.16,81.16,36.34,81.16,81.16ZM334.29,129.8c0-34.9-28.29-63.19-63.19-63.19s-63.19,28.29-63.19,63.19,28.29,63.19,63.19,63.19,63.19-28.29,63.19-63.19Z"/><path d="M17.14,197.77c0,5.91-2.8,9.37-7.9,9.93C5.58,208.11,0,205.46,0,200.28V68.42c0-2.93,3.15-5.52,5.12-6.09,2.51-.73,6.32-.3,8.37,1.82l104.62,107.44.09-108.09c0-5.49,4.06-8.61,8.42-8.63,5.45-.03,8.55,3.7,8.55,9.55v127.82c-.01,3.38-1.58,6.3-3.95,7.68s-6.7,1.66-9.06-.74L17.25,92.44l-.11,105.34Z"/><path d="M899.92,118.47c6.89,46.3-27.39,89.11-72.2,89.17l-32.97.05c-5.77,0-9.61-4.65-9.61-10.48l.03-132.75c0-5.97,4.64-9.56,9.88-9.55l28.12.05c39.06.07,70.96,24.62,76.75,63.51ZM883.07,128.8c-.91-28.95-20.91-51.22-49.19-55.42-10.43-1.55-20.91-1.49-31.56-1.31v118.05s28.67-.7,28.67-.7c31.21-3.58,53.07-28.94,52.08-60.62Z"/><path d="M698.14,162.04l-61.54-.14-17.72,40.08c-1.93,4.36-5.79,6.52-10.22,5.27-4-1.13-7.38-5.96-5.24-10.88l59.41-136.25c.77-1.75,3.3-3.16,4.82-3.1,1.38.06,3.53,1.78,4.36,3.66l59.67,135.91c2.02,4.59-1.09,9.12-5.03,10.62s-8.95-.04-10.89-4.53l-17.61-40.63ZM690.52,144.74l-23.18-52.93-23.33,53.1,46.51-.17Z"/><path d="M1031.33,162.03l-61.53-.11-18.1,40.89c-1.9,4.28-6.68,5.77-10.7,4.12-3.28-1.35-6.36-5.93-4.42-10.38l58.79-134.85c.81-1.86,2.96-3.57,4.35-3.76,1.7-.23,4.83,1.19,5.72,3.22l59.73,136.08c1.87,4.25-2.08,8.74-4.76,9.71-4.37,1.59-8.84.22-11.2-3.71l-17.88-41.22ZM1023.9,145.04l-23.38-53.27-23.5,53.44,46.88-.17Z"/><path d="M953.55,295.78l-6.61,28.59c-.3,1.32-2.69,3.02-4.14,2.83-1.66-.21-3.27-2.59-3.04-4.44l9.21-41.67c.72-1.05,1.87-2.36,2.72-2.76s3.01,1.12,3.41,2l14,30.99,14.42-31.71c.41-.5,2.51-2.47,3.15-1.93l2.69,2.28,9.33,42.73c-.11,1.66-1.15,3.95-2.36,4.37-1.76.62-4.6-.98-4.99-2.74l-6.5-29.32-12.61,28.18c-.39.87-1.97,2.51-2.72,2.3-.94-.26-2.51-1.3-3.32-2.02l-12.65-27.69Z"/><path d="M1066.79,301.1c0,15.29-12.39,27.68-27.68,27.68s-27.68-12.39-27.68-27.68,12.39-27.68,27.68-27.68,27.68,12.39,27.68,27.68ZM1058.9,301.08c0-10.93-8.86-19.8-19.8-19.8s-19.8,8.86-19.8,19.8,8.86,19.8,19.8,19.8,19.8-8.86,19.8-19.8Z"/><path d="M918.74,325.89l-13.52-20.35-.57,18.38c-.05,1.72-2.71,3.48-4.01,3.31-1.84-.23-3.55-2.66-3.54-4.83l.18-46.87c7.13-1.01,13.63-1.06,19.98.67,5.94,1.62,8.57,7.39,8.77,13.04.26,7.83-3.8,13.82-12.35,15.24l10.79,16.61c.83,1.27.41,4.39-.61,5.31s-4.3.68-5.1-.52ZM916.41,295.13c2.7-2.42,2.5-8.99-.17-10.74-3.11-2.03-7.29-2.07-11.42-2.06v14.89c4.04.27,8.65.54,11.58-2.09Z"/><path d="M292.15,16.65h-41.99c-5.08.02-8.73-2.32-9.44-7.31C240.17,5.44,242.8-.02,248.14,0l46.96.14c4.95.01,6.88,6.13,6.31,9.55-.74,4.49-4.31,6.96-9.26,6.96Z"/><path d="M785.09,312.35l-19.15-.05-5.74,12.85c-.54,1.22-3.33,2.24-4.41,1.92-1.29-.38-2.47-2.75-2.49-4.56l19.12-43.91c.86-.84,2.28-2.01,3.17-2.03s2.26,1.44,2.95,2.34l18.65,42.45c.69,1.76.12,4.66-1.18,5.36-1.55.84-4.9-.11-5.48-1.48l-5.46-12.89ZM781.6,304.51l-6.14-13.81-6.25,13.95,12.39-.13Z"/><path d="M876.8,302.29l-16.98.03v17.56s16.42-.07,16.42-.07c1.35,0,3.6,1.8,3.8,3.11.27,1.73-1.84,4.5-3.7,4.46l-23.77-.49-.13-48.55c0-1.52,2.33-3.49,3.71-3.48l20.01.02c1.38,0,3.54,1.87,3.76,3.17.29,1.73-1.83,4.37-3.47,4.37l-16.69-.04.2,12.76,17.24.05c1.18,0,2.82,2.52,2.83,3.62s-1.86,3.49-3.22,3.49Z"/><path d="M725.19,305.08l-.07,18.39c0,1.95-2.53,4.07-4.39,3.73s-3.08-2.61-3.07-4.9l.19-46.94c7.06-.68,13.49-.97,19.47.77,6.39,1.86,9.21,8,9.05,14.19-.19,6.87-4.11,12.67-11.21,14.07l-9.96.69ZM735.47,296.13c4.19-2.23,4.28-9.55.73-11.96-2.86-1.94-7.34-1.93-11.03-1.89v15.42c3.22,0,7.4-.03,10.3-1.58Z"/><path d="M833.06,319.63c1.62.01,3.97,2.53,3.75,4.08-.24,1.67-2.73,3.82-4.37,3.77l-19.18-.56-.19-47.77c0-1.79,1.92-4.31,3.5-4.44,1.45-.12,3.99,2.34,3.99,3.84v40.99s12.49.08,12.49.08Z"/></g></svg>
     <h2>Buscador de Vistas</h2>
     <p>Selecciona una unidad para ver su vista panoramica</p>
   </div>
@@ -336,6 +359,7 @@ let selectedUnit = null;
 let inlineViewer = null;
 let fsViewer = null;
 const IMAGE_DIR = 'panoramas';
+const IMAGE_DIR_LOW = 'panoramas/low';
 
 const SORT_MODES = [
   { key: 'default', label: 'A-Z', fn: (a,b) => { if(a.nucleo!==b.nucleo) return a.nucleo.localeCompare(b.nucleo); return (a.pisos||0)-(b.pisos||0)||a.unit.localeCompare(b.unit); }},
@@ -360,6 +384,14 @@ function getPanoramicPath(unit) {
   let imgFloor = Math.max(3, Math.min(13, floor));
   if (group === 4 && imgFloor > 12) imgFloor = 12;
   return `${IMAGE_DIR}/${group}-${imgFloor}.jpg`;
+}
+function getLowResPath(unit) {
+  const { tower, floor, pos } = parseUnit(unit.unit);
+  const group = POSITION_TO_GROUP[tower + pos];
+  if (!group) return null;
+  let imgFloor = Math.max(3, Math.min(13, floor));
+  if (group === 4 && imgFloor > 12) imgFloor = 12;
+  return `${IMAGE_DIR_LOW}/${group}-${imgFloor}.jpg`;
 }
 
 const STATUS_LABELS = {
@@ -398,6 +430,16 @@ function populateFilters() {
     opt.value = a; opt.textContent = `${a} amb.`;
     ambSel.appendChild(opt);
   });
+  // Set area slider range from data
+  const areas = units.map(u => u.supTotal).filter(v => v > 0);
+  const minArea = Math.floor(Math.min(...areas));
+  const maxArea = Math.ceil(Math.max(...areas));
+  ['area-min','area-max'].forEach(id => {
+    const el = document.getElementById(id);
+    el.min = minArea; el.max = maxArea;
+  });
+  document.getElementById('area-min').value = minArea;
+  document.getElementById('area-max').value = maxArea;
 }
 
 function getFilteredUnits() {
@@ -405,17 +447,17 @@ function getFilteredUnits() {
   const tower = document.getElementById('tower-filter').value;
   const floor = document.getElementById('floor-filter').value;
   const amb = document.getElementById('amb-filter').value;
-  const area = document.getElementById('area-filter').value;
+  const areaMin = parseInt(document.getElementById('area-min').value);
+  const areaMax = parseInt(document.getElementById('area-max').value);
+  const areaSliderMax = parseInt(document.getElementById('area-max').max);
+  const areaActive = areaMin > 0 || areaMax < areaSliderMax;
   const status = document.getElementById('status-filter').value;
   return units.filter(u => {
     if (q && !u.unit.toLowerCase().includes(q) && !u.name.toLowerCase().replace(/-/g,'').includes(q.replace(/-/g,''))) return false;
     if (tower && u.nucleo !== tower) return false;
     if (floor && u.floor !== floor) return false;
     if (amb && u.ambientes !== amb) return false;
-    if (area) {
-      const [min, max] = area.split('-').map(Number);
-      if (u.supTotal < min || u.supTotal > max) return false;
-    }
+    if (areaActive && (u.supTotal < areaMin || u.supTotal > areaMax)) return false;
     if (status && u.state !== status) return false;
     return true;
   });
@@ -484,13 +526,14 @@ function selectUnit(code) {
 
 function loadInlinePanoramic() {
   if (!selectedUnit) return;
-  const path = getPanoramicPath(selectedUnit);
+  const hiPath = getPanoramicPath(selectedUnit);
+  const loPath = getLowResPath(selectedUnit);
 
   const loading = document.getElementById('pano-loading');
 
   if (inlineViewer) { inlineViewer.destroy(); inlineViewer = null; }
 
-  if (!path) {
+  if (!hiPath) {
     loading.style.display = 'flex';
     loading.innerHTML = 'Sin vista disponible para esta unidad';
     return;
@@ -499,9 +542,8 @@ function loadInlinePanoramic() {
   loading.style.display = 'flex';
   loading.innerHTML = '<div class="spinner"></div>Cargando vista...';
 
-  inlineViewer = pannellum.viewer('pano-container', {
+  const viewerCfg = {
     type: 'equirectangular',
-    panorama: path,
     autoLoad: true,
     compass: false,
     showControls: false,
@@ -516,17 +558,38 @@ function loadInlinePanoramic() {
     pitch: -5,
     showFullscreenCtrl: false,
     strings: { loadingLabel: '' },
-  });
+  };
 
-  inlineViewer.on('load', () => { loading.style.display = 'none'; });
+  // Load low-res first for instant feedback, then swap to hi-res
+  inlineViewer = pannellum.viewer('pano-container', { ...viewerCfg, panorama: loPath || hiPath });
+
+  inlineViewer.on('load', () => {
+    loading.style.display = 'none';
+    if (loPath) {
+      // Preload hi-res in background, then swap
+      const img = new Image();
+      img.onload = () => {
+        if (!inlineViewer) return;
+        try {
+          const yaw = inlineViewer.getYaw();
+          const pitch = inlineViewer.getPitch();
+          const hfov = inlineViewer.getHfov();
+          inlineViewer.destroy();
+          inlineViewer = pannellum.viewer('pano-container', { ...viewerCfg, panorama: hiPath, yaw, pitch, hfov });
+        } catch(e) {}
+      };
+      img.src = hiPath;
+    }
+  });
   inlineViewer.on('error', () => { loading.innerHTML = 'Error al cargar la vista'; });
 }
 
 /* ═══ FULLSCREEN ═══ */
 function openFullscreen() {
   if (!selectedUnit) return;
-  const path = getPanoramicPath(selectedUnit);
-  if (!path) return;
+  const hiPath = getPanoramicPath(selectedUnit);
+  const loPath = getLowResPath(selectedUnit);
+  if (!hiPath) return;
 
   const overlay = document.getElementById('fullscreen-overlay');
   overlay.classList.add('visible');
@@ -535,29 +598,41 @@ function openFullscreen() {
 
   if (fsViewer) { fsViewer.destroy(); fsViewer = null; }
 
-  // Copy current view angles from inline viewer
   let yaw = 0, pitch = 0, hfov = 100;
   if (inlineViewer) {
     try { yaw = inlineViewer.getYaw(); pitch = inlineViewer.getPitch(); hfov = inlineViewer.getHfov(); } catch(e){}
   }
 
-  fsViewer = pannellum.viewer('fullscreen-pano', {
+  const fsCfg = {
     type: 'equirectangular',
-    panorama: path,
     autoLoad: true,
     compass: false,
     showControls: true,
     mouseZoom: true,
-    hfov: hfov,
-    minHfov: 40,
-    maxHfov: 120,
+    hfov, minHfov: 40, maxHfov: 120,
     autoRotate: -1.5,
     autoRotateInactivityDelay: 3000,
     friction: 0.15,
-    yaw: yaw,
-    pitch: pitch,
+    yaw, pitch,
     showFullscreenCtrl: false,
-    strings: { loadingLabel: 'Cargando vista...' }
+    strings: { loadingLabel: '' },
+  };
+
+  fsViewer = pannellum.viewer('fullscreen-pano', { ...fsCfg, panorama: loPath || hiPath });
+
+  fsViewer.on('load', () => {
+    if (loPath) {
+      const img = new Image();
+      img.onload = () => {
+        if (!fsViewer) return;
+        try {
+          const y = fsViewer.getYaw(), p = fsViewer.getPitch(), h = fsViewer.getHfov();
+          fsViewer.destroy();
+          fsViewer = pannellum.viewer('fullscreen-pano', { ...fsCfg, panorama: hiPath, yaw: y, pitch: p, hfov: h });
+        } catch(e) {}
+      };
+      img.src = hiPath;
+    }
   });
 }
 
@@ -632,9 +707,24 @@ document.getElementById('sort-btn').addEventListener('click', () => {
 
 // Filters
 document.getElementById('search').addEventListener('input', renderList);
-['tower-filter','floor-filter','amb-filter','area-filter','status-filter'].forEach(id =>
+['tower-filter','floor-filter','amb-filter','status-filter'].forEach(id =>
   document.getElementById(id).addEventListener('change', renderList)
 );
+
+// Area slider logic
+function updateAreaLabel() {
+  const minEl = document.getElementById('area-min');
+  const maxEl = document.getElementById('area-max');
+  let lo = parseInt(minEl.value), hi = parseInt(maxEl.value);
+  if (lo > hi) { minEl.value = hi; maxEl.value = lo; lo = hi; hi = parseInt(maxEl.value); }
+  const sliderMax = parseInt(maxEl.max);
+  const label = document.getElementById('area-label');
+  if (lo === 0 && hi >= sliderMax) label.textContent = 'Metraje: todos';
+  else label.textContent = `Metraje: ${lo} - ${hi} m\u00B2`;
+  renderList();
+}
+document.getElementById('area-min').addEventListener('input', updateAreaLabel);
+document.getElementById('area-max').addEventListener('input', updateAreaLabel);
 
 // Disable Pannellum right-click context menu
 document.addEventListener('contextmenu', e => {
