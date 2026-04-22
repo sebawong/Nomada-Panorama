@@ -385,22 +385,29 @@ const isMobile = window.innerWidth <= 768;
 function getViewerConfig() {
   try {
     const saved = localStorage.getItem('nomadaVistasConfig');
-    if (saved) return JSON.parse(saved);
+    if (saved) {
+      const cfg = JSON.parse(saved);
+      // Migrate old format
+      if (cfg.global && ('minPitch' in cfg.global) && !('pitchRange' in cfg.global)) {
+        cfg.global.pitchRange = Math.round((cfg.global.maxPitch - cfg.global.minPitch) / 2) || 60;
+        cfg.global.yawRange = Math.round((cfg.global.maxYaw - cfg.global.minYaw) / 2) || 180;
+      }
+      return cfg;
+    }
   } catch(e) {}
-  return { global: { minPitch: -60, maxPitch: 60, minYaw: -180, maxYaw: 180 }, images: {} };
+  return { global: { pitchRange: 60, yawRange: 180 }, images: {} };
 }
 function getImageConfig(imageKey) {
   const cfg = getViewerConfig();
   const imgYaw = cfg.images[imageKey]?.yaw ?? 0;
   const imgPitch = cfg.images[imageKey]?.pitch ?? -5;
-  // Center rotation limits around the saved initial rotation
-  const yawRange = (cfg.global.maxYaw - cfg.global.minYaw) / 2;
-  const pitchRange = (cfg.global.maxPitch - cfg.global.minPitch) / 2;
+  const yr = cfg.global.yawRange ?? 180;
+  const pr = cfg.global.pitchRange ?? 60;
   return {
-    minPitch: imgPitch - pitchRange,
-    maxPitch: imgPitch + pitchRange,
-    minYaw: imgYaw - yawRange,
-    maxYaw: imgYaw + yawRange,
+    minPitch: imgPitch - pr,
+    maxPitch: imgPitch + pr,
+    minYaw: imgYaw - yr,
+    maxYaw: imgYaw + yr,
     yaw: imgYaw,
     pitch: imgPitch,
   };
