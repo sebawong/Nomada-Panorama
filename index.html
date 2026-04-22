@@ -358,8 +358,6 @@ let units = [];
 let selectedUnit = null;
 let inlineViewer = null;
 let fsViewer = null;
-let currentLoadId = null;
-let currentFsLoadId = null;
 const IMAGE_DIR = 'panoramas';
 const IMAGE_DIR_LOW = 'panoramas/low';
 
@@ -531,21 +529,32 @@ function loadInlinePanoramic() {
   const hiPath = getPanoramicPath(selectedUnit);
   const loPath = getLowResPath(selectedUnit);
 
+  const container = document.getElementById('pano-container');
   const loading = document.getElementById('pano-loading');
 
   if (inlineViewer) { inlineViewer.destroy(); inlineViewer = null; }
 
   if (!hiPath) {
+    container.style.backgroundImage = '';
     loading.style.display = 'flex';
     loading.innerHTML = 'Sin vista disponible para esta unidad';
     return;
   }
 
+  // Show low-res as CSS background for instant preview
+  if (loPath) {
+    container.style.backgroundImage = `url(${loPath})`;
+    container.style.backgroundSize = 'cover';
+    container.style.backgroundPosition = 'center';
+  }
+
   loading.style.display = 'flex';
   loading.innerHTML = '<div class="spinner"></div>Cargando vista...';
 
-  const viewerCfg = {
+  // Load Pannellum directly with hi-res — low-res background shows while it loads
+  inlineViewer = pannellum.viewer('pano-container', {
     type: 'equirectangular',
+    panorama: hiPath,
     autoLoad: true,
     compass: false,
     showControls: false,
@@ -560,28 +569,9 @@ function loadInlinePanoramic() {
     pitch: -5,
     showFullscreenCtrl: false,
     strings: { loadingLabel: '' },
-  };
-
-  // Load low-res first for instant feedback, then swap to hi-res
-  const loadId = Symbol();
-  currentLoadId = loadId;
-  inlineViewer = pannellum.viewer('pano-container', { ...viewerCfg, panorama: loPath || hiPath });
-
-  inlineViewer.on('load', () => {
-    loading.style.display = 'none';
-    if (loPath && currentLoadId === loadId) {
-      const img = new Image();
-      img.onload = () => {
-        if (currentLoadId !== loadId || !inlineViewer) return;
-        const yaw = inlineViewer.getYaw();
-        const pitch = inlineViewer.getPitch();
-        const hfov = inlineViewer.getHfov();
-        inlineViewer.destroy();
-        inlineViewer = pannellum.viewer('pano-container', { ...viewerCfg, panorama: hiPath, yaw, pitch, hfov });
-      };
-      img.src = hiPath;
-    }
   });
+
+  inlineViewer.on('load', () => { loading.style.display = 'none'; });
   inlineViewer.on('error', () => { loading.innerHTML = 'Error al cargar la vista'; });
 }
 
@@ -604,8 +594,17 @@ function openFullscreen() {
     try { yaw = inlineViewer.getYaw(); pitch = inlineViewer.getPitch(); hfov = inlineViewer.getHfov(); } catch(e){}
   }
 
-  const fsCfg = {
+  // Show low-res as CSS background for instant preview
+  const fsPano = document.getElementById('fullscreen-pano');
+  if (loPath) {
+    fsPano.style.backgroundImage = `url(${loPath})`;
+    fsPano.style.backgroundSize = 'cover';
+    fsPano.style.backgroundPosition = 'center';
+  }
+
+  fsViewer = pannellum.viewer('fullscreen-pano', {
     type: 'equirectangular',
+    panorama: hiPath,
     autoLoad: true,
     compass: false,
     showControls: true,
@@ -617,23 +616,6 @@ function openFullscreen() {
     yaw, pitch,
     showFullscreenCtrl: false,
     strings: { loadingLabel: '' },
-  };
-
-  const fsLoadId = Symbol();
-  currentFsLoadId = fsLoadId;
-  fsViewer = pannellum.viewer('fullscreen-pano', { ...fsCfg, panorama: loPath || hiPath });
-
-  fsViewer.on('load', () => {
-    if (loPath && currentFsLoadId === fsLoadId) {
-      const img = new Image();
-      img.onload = () => {
-        if (currentFsLoadId !== fsLoadId || !fsViewer) return;
-        const y = fsViewer.getYaw(), p = fsViewer.getPitch(), h = fsViewer.getHfov();
-        fsViewer.destroy();
-        fsViewer = pannellum.viewer('fullscreen-pano', { ...fsCfg, panorama: hiPath, yaw: y, pitch: p, hfov: h });
-      };
-      img.src = hiPath;
-    }
   });
 }
 
