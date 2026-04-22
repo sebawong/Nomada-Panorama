@@ -358,6 +358,8 @@ let units = [];
 let selectedUnit = null;
 let inlineViewer = null;
 let fsViewer = null;
+let currentLoadId = null;
+let currentFsLoadId = null;
 const IMAGE_DIR = 'panoramas';
 const IMAGE_DIR_LOW = 'panoramas/low';
 
@@ -561,22 +563,21 @@ function loadInlinePanoramic() {
   };
 
   // Load low-res first for instant feedback, then swap to hi-res
+  const loadId = Symbol();
+  currentLoadId = loadId;
   inlineViewer = pannellum.viewer('pano-container', { ...viewerCfg, panorama: loPath || hiPath });
 
   inlineViewer.on('load', () => {
     loading.style.display = 'none';
-    if (loPath) {
-      // Preload hi-res in background, then swap
+    if (loPath && currentLoadId === loadId) {
       const img = new Image();
       img.onload = () => {
-        if (!inlineViewer) return;
-        try {
-          const yaw = inlineViewer.getYaw();
-          const pitch = inlineViewer.getPitch();
-          const hfov = inlineViewer.getHfov();
-          inlineViewer.destroy();
-          inlineViewer = pannellum.viewer('pano-container', { ...viewerCfg, panorama: hiPath, yaw, pitch, hfov });
-        } catch(e) {}
+        if (currentLoadId !== loadId || !inlineViewer) return;
+        const yaw = inlineViewer.getYaw();
+        const pitch = inlineViewer.getPitch();
+        const hfov = inlineViewer.getHfov();
+        inlineViewer.destroy();
+        inlineViewer = pannellum.viewer('pano-container', { ...viewerCfg, panorama: hiPath, yaw, pitch, hfov });
       };
       img.src = hiPath;
     }
@@ -618,18 +619,18 @@ function openFullscreen() {
     strings: { loadingLabel: '' },
   };
 
+  const fsLoadId = Symbol();
+  currentFsLoadId = fsLoadId;
   fsViewer = pannellum.viewer('fullscreen-pano', { ...fsCfg, panorama: loPath || hiPath });
 
   fsViewer.on('load', () => {
-    if (loPath) {
+    if (loPath && currentFsLoadId === fsLoadId) {
       const img = new Image();
       img.onload = () => {
-        if (!fsViewer) return;
-        try {
-          const y = fsViewer.getYaw(), p = fsViewer.getPitch(), h = fsViewer.getHfov();
-          fsViewer.destroy();
-          fsViewer = pannellum.viewer('fullscreen-pano', { ...fsCfg, panorama: hiPath, yaw: y, pitch: p, hfov: h });
-        } catch(e) {}
+        if (currentFsLoadId !== fsLoadId || !fsViewer) return;
+        const y = fsViewer.getYaw(), p = fsViewer.getPitch(), h = fsViewer.getHfov();
+        fsViewer.destroy();
+        fsViewer = pannellum.viewer('fullscreen-pano', { ...fsCfg, panorama: hiPath, yaw: y, pitch: p, hfov: h });
       };
       img.src = hiPath;
     }
