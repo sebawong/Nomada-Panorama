@@ -391,13 +391,18 @@ function getViewerConfig() {
 }
 function getImageConfig(imageKey) {
   const cfg = getViewerConfig();
+  const imgYaw = cfg.images[imageKey]?.yaw ?? 0;
+  const imgPitch = cfg.images[imageKey]?.pitch ?? -5;
+  // Center rotation limits around the saved initial rotation
+  const yawRange = (cfg.global.maxYaw - cfg.global.minYaw) / 2;
+  const pitchRange = (cfg.global.maxPitch - cfg.global.minPitch) / 2;
   return {
-    minPitch: cfg.global.minPitch,
-    maxPitch: cfg.global.maxPitch,
-    minYaw: cfg.global.minYaw,
-    maxYaw: cfg.global.maxYaw,
-    yaw: cfg.images[imageKey]?.yaw ?? 0,
-    pitch: cfg.images[imageKey]?.pitch ?? -5,
+    minPitch: imgPitch - pitchRange,
+    maxPitch: imgPitch + pitchRange,
+    minYaw: imgYaw - yawRange,
+    maxYaw: imgYaw + yawRange,
+    yaw: imgYaw,
+    pitch: imgPitch,
   };
 }
 function getImageKey(unit) {

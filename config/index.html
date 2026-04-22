@@ -153,7 +153,10 @@ header a:hover{text-decoration:underline}
       <div class="info">
         Imagen: <strong id="bar-name">-</strong>
       </div>
-      <div class="coords" id="bar-coords">yaw: 0° | pitch: 0°</div>
+      <div>
+        <div class="coords" id="bar-coords">yaw: 0° | pitch: 0°</div>
+        <div class="coords" id="bar-range" style="color:var(--sage-light)"></div>
+      </div>
       <div style="display:flex;gap:8px">
         <button class="btn btn-primary" onclick="setInitialRotation()">Fijar rotación</button>
         <button class="btn btn-danger" onclick="clearImageConfig()">Limpiar</button>
@@ -268,6 +271,11 @@ function openImage(key) {
 
   const savedYaw = config.images[key]?.yaw ?? 0;
   const savedPitch = config.images[key]?.pitch ?? -5;
+  if (config.images[key]) {
+    updateRangeDisplay(savedYaw, savedPitch);
+  } else {
+    document.getElementById('bar-range').textContent = 'Sin rotación fijada';
+  }
 
   viewer = pannellum.viewer('config-viewer', {
     type: 'equirectangular',
@@ -299,6 +307,13 @@ function openImage(key) {
   }, 100);
 }
 
+function updateRangeDisplay(yaw, pitch) {
+  const yawRange = (config.global.maxYaw - config.global.minYaw) / 2;
+  const pitchRange = (config.global.maxPitch - config.global.minPitch) / 2;
+  const el = document.getElementById('bar-range');
+  el.textContent = `Rango efectivo: yaw [${(yaw-yawRange).toFixed(0)}°, ${(yaw+yawRange).toFixed(0)}°] | pitch [${(pitch-pitchRange).toFixed(0)}°, ${(pitch+pitchRange).toFixed(0)}°]`;
+}
+
 function setInitialRotation() {
   if (!viewer || !currentImage) return;
   const yaw = Math.round(viewer.getYaw() * 10) / 10;
@@ -306,6 +321,7 @@ function setInitialRotation() {
   config.images[currentImage] = { yaw, pitch };
   saveConfig();
   renderGrid();
+  updateRangeDisplay(yaw, pitch);
   toast(`${currentImage}: yaw=${yaw}° pitch=${pitch}°`);
 }
 
