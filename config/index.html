@@ -23,7 +23,7 @@ header a:hover{text-decoration:underline}
 
 /* ── Left panel ── */
 .panel{
-  width:340px;min-width:340px;background:var(--charcoal);
+  width:380px;min-width:380px;background:var(--charcoal);
   border-right:1px solid rgba(255,255,255,.08);
   overflow-y:auto;display:flex;flex-direction:column;
 }
@@ -41,6 +41,7 @@ header a:hover{text-decoration:underline}
   padding:8px 16px;border:none;border-radius:6px;cursor:pointer;font-size:13px;
   font-family:inherit;transition:background .2s;
 }
+.btn-sm{padding:5px 10px;font-size:11px}
 .btn-primary{background:var(--sage);color:#fff}
 .btn-primary:hover{background:var(--sage-light)}
 .btn-secondary{background:rgba(255,255,255,.1);color:var(--cream)}
@@ -50,10 +51,19 @@ header a:hover{text-decoration:underline}
 
 .actions{display:flex;gap:8px;margin-top:4px}
 
+/* ── Collapsible sections ── */
+.collapse-header{
+  display:flex;align-items:center;justify-content:space-between;cursor:pointer;
+  user-select:none;
+}
+.collapse-header .arrow{font-size:10px;color:rgba(255,255,255,.4);transition:transform .2s}
+.collapse-header.open .arrow{transform:rotate(180deg)}
+.collapse-body{overflow:hidden;max-height:0;transition:max-height .3s ease}
+.collapse-body.open{max-height:2000px}
+
 /* ── Image grid ── */
-.grid-section{flex:1;overflow-y:auto;padding:16px 20px}
-.grid-section h2{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;color:var(--sage-light)}
-.image-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:6px}
+.grid-section{overflow-y:auto;padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.06)}
+.image-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:5px;margin-top:10px}
 .img-thumb{
   position:relative;aspect-ratio:2/1;border-radius:6px;overflow:hidden;cursor:pointer;
   border:2px solid transparent;transition:border .2s;
@@ -64,7 +74,7 @@ header a:hover{text-decoration:underline}
 .img-thumb img{width:100%;height:100%;object-fit:cover}
 .img-thumb .label{
   position:absolute;bottom:0;left:0;right:0;padding:2px 4px;
-  background:rgba(0,0,0,.7);font-size:10px;text-align:center;
+  background:rgba(0,0,0,.7);font-size:9px;text-align:center;
 }
 .img-thumb .check{
   position:absolute;top:3px;right:3px;width:14px;height:14px;
@@ -73,17 +83,58 @@ header a:hover{text-decoration:underline}
 }
 .img-thumb.configured .check{display:flex}
 
+/* ── Units assigned badge on image ── */
+.img-thumb .unit-count{
+  position:absolute;top:3px;left:3px;min-width:16px;height:16px;padding:0 4px;
+  background:rgba(196,94,44,.9);border-radius:8px;font-size:9px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* ── Units section ── */
+.units-section{flex:1;overflow-y:auto;padding:16px 20px}
+.unit-search{
+  width:100%;padding:8px 10px;border:1px solid rgba(255,255,255,.1);border-radius:5px;
+  background:rgba(255,255,255,.06);color:var(--cream);font-size:12px;outline:none;
+  margin-bottom:8px;
+}
+.unit-search:focus{border-color:var(--sage)}
+.unit-list-cfg{max-height:300px;overflow-y:auto;margin-bottom:8px}
+.unit-row{
+  display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:4px;
+  font-size:12px;cursor:pointer;transition:background .15s;
+}
+.unit-row:hover{background:rgba(255,255,255,.06)}
+.unit-row.selected{background:rgba(125,142,110,.2)}
+.unit-row input[type=checkbox]{accent-color:var(--sage);cursor:pointer}
+.unit-row .unit-name{flex:1;min-width:0}
+.unit-row .unit-img{
+  font-size:10px;color:rgba(255,255,255,.35);background:rgba(255,255,255,.06);
+  padding:2px 6px;border-radius:3px;white-space:nowrap;
+}
+.unit-row .unit-img.override{color:var(--sage-light);background:rgba(125,142,110,.15)}
+.assign-bar{
+  display:flex;gap:6px;align-items:center;padding:8px 0;
+  border-top:1px solid rgba(255,255,255,.06);
+}
+.assign-bar select{
+  flex:1;padding:7px 8px;border:1px solid rgba(255,255,255,.12);border-radius:5px;
+  background:#2a2a2a;color:var(--cream);font-size:12px;outline:none;
+}
+.assign-bar select option{background:#2a2a2a;color:var(--cream)}
+.sel-count{font-size:11px;color:rgba(255,255,255,.4);margin-bottom:4px}
+
 /* ── Viewer area ── */
 .viewer-area{flex:1;display:flex;flex-direction:column;position:relative;background:#000}
 #config-viewer{flex:1}
 .viewer-bar{
-  display:flex;align-items:center;justify-content:space-between;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
   padding:10px 16px;background:rgba(22,22,22,.95);
-  border-top:1px solid rgba(255,255,255,.08);
+  border-top:1px solid rgba(255,255,255,.08);flex-wrap:wrap;
 }
 .viewer-bar .info{font-size:13px;color:rgba(255,255,255,.6)}
 .viewer-bar .info strong{color:var(--cream)}
 .viewer-bar .coords{font-size:12px;color:rgba(255,255,255,.4);font-family:monospace}
+.viewer-bar .assigned-units{font-size:11px;color:var(--sage-light);margin-top:2px}
 .viewer-empty{
   flex:1;display:flex;align-items:center;justify-content:center;
   color:rgba(255,255,255,.3);font-size:15px;
@@ -99,8 +150,8 @@ header a:hover{text-decoration:underline}
 
 @media(max-width:768px){
   .layout{flex-direction:column}
-  .panel{width:100%;min-width:0;max-height:40vh;border-right:none;border-bottom:1px solid rgba(255,255,255,.08)}
-  .viewer-area{min-height:50vh}
+  .panel{width:100%;min-width:0;max-height:45vh;border-right:none;border-bottom:1px solid rgba(255,255,255,.08)}
+  .viewer-area{min-height:45vh}
 }
 </style>
 </head>
@@ -113,6 +164,7 @@ header a:hover{text-decoration:underline}
 
 <div class="layout">
   <div class="panel">
+    <!-- Rotation limits -->
     <div class="section">
       <h2>Límites de rotación</h2>
       <p style="font-size:11px;color:rgba(255,255,255,.3);margin-bottom:10px">
@@ -120,7 +172,7 @@ header a:hover{text-decoration:underline}
       </p>
       <div class="field">
         <label>Vertical (pitch) ±</label>
-        <input type="number" id="cfg-pitchRange" value="60" min="5" max="90" step="5" suffix="°">
+        <input type="number" id="cfg-pitchRange" value="60" min="5" max="90" step="5">
       </div>
       <div class="field">
         <label>Horizontal (yaw) ±</label>
@@ -132,12 +184,41 @@ header a:hover{text-decoration:underline}
       </div>
     </div>
 
+    <!-- Images grid -->
     <div class="grid-section">
-      <h2>Rotación inicial por imagen</h2>
-      <p style="font-size:12px;color:rgba(255,255,255,.35);margin-bottom:10px">
-        Seleccioná una imagen, posicionala y tocá "Fijar rotación"
-      </p>
-      <div class="image-grid" id="image-grid"></div>
+      <div class="collapse-header open" onclick="toggleCollapse(this)">
+        <h2 style="margin-bottom:0">Imágenes</h2>
+        <span class="arrow">▲</span>
+      </div>
+      <div class="collapse-body open">
+        <p style="font-size:11px;color:rgba(255,255,255,.3);margin:8px 0 6px">
+          Seleccioná una imagen, posicionala y tocá "Fijar rotación"
+        </p>
+        <div class="image-grid" id="image-grid"></div>
+      </div>
+    </div>
+
+    <!-- Units assignment -->
+    <div class="units-section">
+      <div class="collapse-header open" onclick="toggleCollapse(this)">
+        <h2 style="margin-bottom:0;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--sage-light)">Unidades</h2>
+        <span class="arrow">▲</span>
+      </div>
+      <div class="collapse-body open">
+        <p style="font-size:11px;color:rgba(255,255,255,.3);margin:8px 0 6px">
+          Seleccioná unidades y asignales una imagen manualmente
+        </p>
+        <input type="text" class="unit-search" id="unit-search" placeholder="Buscar unidad..." autocomplete="off">
+        <div class="sel-count" id="sel-count"></div>
+        <div class="unit-list-cfg" id="unit-list-cfg">Cargando unidades...</div>
+        <div class="assign-bar">
+          <select id="assign-image">
+            <option value="">Elegir imagen...</option>
+          </select>
+          <button class="btn btn-primary btn-sm" onclick="assignImage()">Asignar</button>
+          <button class="btn btn-danger btn-sm" onclick="clearOverrides()">Quitar</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -145,8 +226,9 @@ header a:hover{text-decoration:underline}
     <div class="viewer-empty" id="viewer-empty">Seleccioná una imagen para configurar</div>
     <div id="config-viewer" style="display:none"></div>
     <div class="viewer-bar" id="viewer-bar" style="display:none">
-      <div class="info">
-        Imagen: <strong id="bar-name">-</strong>
+      <div>
+        <div class="info">Imagen: <strong id="bar-name">-</strong></div>
+        <div class="assigned-units" id="bar-units"></div>
       </div>
       <div>
         <div class="coords" id="bar-coords">yaw: 0° | pitch: 0°</div>
@@ -166,8 +248,14 @@ header a:hover{text-decoration:underline}
 const IMAGE_DIR = '../panoramas';
 const IMAGE_DIR_LOW = '../panoramas/low';
 const STORAGE_KEY = 'nomadaVistasConfig';
+const API_URL = 'https://nw-app-dashboard.web.app/api/getUnits';
 
-// All image keys: group-floor
+const POSITION_TO_GROUP = {
+  'A01':1,'A02':2,'A03':3,'A04':3,'A05':4,'A06':4,
+  'A07':5,'A08':5,'B01':6,'B02':6,'B03':7,'B04':7,
+  'B05':8,'B06':9,'B07':10,
+};
+
 const ALL_IMAGES = [];
 for (let g = 1; g <= 10; g++) {
   const maxFloor = g === 4 ? 12 : 13;
@@ -180,32 +268,29 @@ let config = loadConfig();
 let currentImage = null;
 let viewer = null;
 let coordsInterval = null;
+let units = [];
+let selectedUnits = new Set();
 
+// ── Config persistence ──
 function defaultConfig() {
-  return {
-    global: { pitchRange: 60, yawRange: 180 },
-    images: {}
-  };
+  return { global: { pitchRange: 60, yawRange: 180 }, images: {}, unitOverrides: {} };
 }
 
 function migrateConfig(cfg) {
-  // Migrate old min/max format to ±range format
   if (cfg.global && ('minPitch' in cfg.global) && !('pitchRange' in cfg.global)) {
     cfg.global.pitchRange = Math.round((cfg.global.maxPitch - cfg.global.minPitch) / 2) || 60;
     cfg.global.yawRange = Math.round((cfg.global.maxYaw - cfg.global.minYaw) / 2) || 180;
     delete cfg.global.minPitch; delete cfg.global.maxPitch;
     delete cfg.global.minYaw; delete cfg.global.maxYaw;
   }
+  if (!cfg.unitOverrides) cfg.unitOverrides = {};
   return cfg;
 }
 
 function loadConfig() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      return migrateConfig({ ...defaultConfig(), ...parsed });
-    }
+    if (saved) return migrateConfig({ ...defaultConfig(), ...JSON.parse(saved) });
   } catch(e) {}
   return defaultConfig();
 }
@@ -219,6 +304,43 @@ function toast(msg) {
   el.textContent = msg;
   el.classList.add('show');
   setTimeout(() => el.classList.remove('show'), 2000);
+}
+
+// ── Unit → image mapping ──
+function parseUnit(code) {
+  const tower = code[0], num = code.slice(1);
+  const floor = parseInt(num.length === 3 ? num[0] : num.slice(0, -2));
+  const pos = num.slice(-2);
+  return { tower, floor, pos };
+}
+
+function getDefaultImageKey(unitCode) {
+  const { tower, floor, pos } = parseUnit(unitCode);
+  const group = POSITION_TO_GROUP[tower + pos];
+  if (!group) return null;
+  let imgFloor = Math.max(3, Math.min(13, floor));
+  if (group === 4 && imgFloor > 12) imgFloor = 12;
+  return `${group}-${imgFloor}`;
+}
+
+function getImageKeyForUnit(unitCode) {
+  return config.unitOverrides[unitCode] || getDefaultImageKey(unitCode);
+}
+
+function getUnitsForImage(imageKey) {
+  const result = [];
+  for (const u of units) {
+    const key = getImageKeyForUnit(u.unit);
+    if (key === imageKey) result.push(u);
+  }
+  return result;
+}
+
+// ── Collapsible ──
+function toggleCollapse(header) {
+  header.classList.toggle('open');
+  const body = header.nextElementSibling;
+  body.classList.toggle('open');
 }
 
 // ── Global limits ──
@@ -249,11 +371,14 @@ function renderGrid() {
   grid.innerHTML = ALL_IMAGES.map(key => {
     const configured = config.images[key] ? 'configured' : '';
     const active = currentImage === key ? 'active' : '';
+    const assignedCount = getUnitsForImage(key).length;
+    const countBadge = assignedCount > 0 ? `<div class="unit-count">${assignedCount}</div>` : '';
     return `
       <div class="img-thumb ${configured} ${active}" onclick="openImage('${key}')" title="${key}">
         <img src="${IMAGE_DIR_LOW}/${key}.jpg" loading="lazy" alt="${key}">
         <div class="label">${key}</div>
         <div class="check">✓</div>
+        ${countBadge}
       </div>
     `;
   }).join('');
@@ -267,6 +392,15 @@ function openImage(key) {
   document.getElementById('config-viewer').style.display = 'block';
   document.getElementById('viewer-bar').style.display = 'flex';
   document.getElementById('bar-name').textContent = key;
+
+  // Show assigned units
+  const assigned = getUnitsForImage(key);
+  const barUnits = document.getElementById('bar-units');
+  if (assigned.length > 0) {
+    barUnits.textContent = `Unidades: ${assigned.map(u => u.name || u.unit).join(', ')}`;
+  } else {
+    barUnits.textContent = 'Sin unidades asignadas';
+  }
 
   if (viewer) { viewer.destroy(); viewer = null; }
   if (coordsInterval) clearInterval(coordsInterval);
@@ -332,9 +466,102 @@ function clearImageConfig() {
   openImage(currentImage);
 }
 
+// ── Units section ──
+async function loadUnits() {
+  try {
+    const res = await fetch(API_URL);
+    units = await res.json();
+    units.sort((a, b) => a.unit.localeCompare(b.unit));
+    renderUnits();
+    renderGrid(); // refresh unit counts on images
+    populateImageSelect();
+  } catch(e) {
+    document.getElementById('unit-list-cfg').innerHTML = '<p style="color:#c45e2c">Error cargando unidades</p>';
+  }
+}
+
+function populateImageSelect() {
+  const sel = document.getElementById('assign-image');
+  sel.innerHTML = '<option value="">Elegir imagen...</option>' +
+    ALL_IMAGES.map(k => `<option value="${k}">${k}</option>`).join('');
+}
+
+function renderUnits() {
+  const q = document.getElementById('unit-search').value.toLowerCase().trim();
+  const filtered = units.filter(u => {
+    if (!q) return true;
+    return u.unit.toLowerCase().includes(q) || (u.name || '').toLowerCase().includes(q);
+  });
+
+  const list = document.getElementById('unit-list-cfg');
+  list.innerHTML = filtered.map(u => {
+    const checked = selectedUnits.has(u.unit) ? 'checked' : '';
+    const selClass = selectedUnits.has(u.unit) ? 'selected' : '';
+    const imageKey = getImageKeyForUnit(u.unit);
+    const defaultKey = getDefaultImageKey(u.unit);
+    const isOverride = config.unitOverrides[u.unit];
+    const imgLabel = imageKey || 'sin imagen';
+    const imgClass = isOverride ? 'override' : '';
+    return `
+      <label class="unit-row ${selClass}">
+        <input type="checkbox" ${checked} onchange="toggleUnit('${u.unit}')">
+        <span class="unit-name">${u.name || u.unit}</span>
+        <span class="unit-img ${imgClass}" title="${isOverride ? 'Asignación manual' : 'Auto'}">${imgLabel}</span>
+      </label>
+    `;
+  }).join('');
+
+  updateSelCount();
+}
+
+function toggleUnit(code) {
+  if (selectedUnits.has(code)) selectedUnits.delete(code);
+  else selectedUnits.add(code);
+  renderUnits();
+}
+
+function updateSelCount() {
+  const el = document.getElementById('sel-count');
+  const n = selectedUnits.size;
+  el.textContent = n > 0 ? `${n} unidad${n > 1 ? 'es' : ''} seleccionada${n > 1 ? 's' : ''}` : '';
+}
+
+function assignImage() {
+  const imageKey = document.getElementById('assign-image').value;
+  if (!imageKey) { toast('Elegí una imagen primero'); return; }
+  if (selectedUnits.size === 0) { toast('Seleccioná al menos una unidad'); return; }
+
+  for (const code of selectedUnits) {
+    config.unitOverrides[code] = imageKey;
+  }
+  saveConfig();
+  const count = selectedUnits.size;
+  selectedUnits.clear();
+  renderUnits();
+  renderGrid();
+  if (currentImage) openImage(currentImage);
+  toast(`${count} unidad${count > 1 ? 'es' : ''} asignada${count > 1 ? 's' : ''} a ${imageKey}`);
+}
+
+function clearOverrides() {
+  if (selectedUnits.size === 0) { toast('Seleccioná al menos una unidad'); return; }
+  for (const code of selectedUnits) {
+    delete config.unitOverrides[code];
+  }
+  saveConfig();
+  const count = selectedUnits.size;
+  selectedUnits.clear();
+  renderUnits();
+  renderGrid();
+  if (currentImage) openImage(currentImage);
+  toast(`${count} unidad${count > 1 ? 'es' : ''}: asignación manual eliminada`);
+}
+
 // ── Init ──
 initGlobalFields();
 renderGrid();
+loadUnits();
+document.getElementById('unit-search').addEventListener('input', renderUnits);
 </script>
 </body>
 </html>

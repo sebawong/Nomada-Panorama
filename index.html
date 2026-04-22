@@ -395,7 +395,7 @@ function getViewerConfig() {
       return cfg;
     }
   } catch(e) {}
-  return { global: { pitchRange: 60, yawRange: 180 }, images: {} };
+  return { global: { pitchRange: 60, yawRange: 180 }, images: {}, unitOverrides: {} };
 }
 function getImageConfig(imageKey) {
   const cfg = getViewerConfig();
@@ -413,6 +413,10 @@ function getImageConfig(imageKey) {
   };
 }
 function getImageKey(unit) {
+  // Check manual override first
+  const cfg = getViewerConfig();
+  if (cfg.unitOverrides && cfg.unitOverrides[unit.unit]) return cfg.unitOverrides[unit.unit];
+  // Default mapping
   const { tower, floor, pos } = parseUnit(unit.unit);
   const group = POSITION_TO_GROUP[tower + pos];
   if (!group) return null;
@@ -438,20 +442,14 @@ function parseUnit(code) {
 }
 
 function getPanoramicPath(unit) {
-  const { tower, floor, pos } = parseUnit(unit.unit);
-  const group = POSITION_TO_GROUP[tower + pos];
-  if (!group) return null;
-  let imgFloor = Math.max(3, Math.min(13, floor));
-  if (group === 4 && imgFloor > 12) imgFloor = 12;
-  return `${IMAGE_DIR}/${group}-${imgFloor}.jpg`;
+  const key = getImageKey(unit);
+  if (!key) return null;
+  return `${IMAGE_DIR}/${key}.jpg`;
 }
 function getLowResPath(unit) {
-  const { tower, floor, pos } = parseUnit(unit.unit);
-  const group = POSITION_TO_GROUP[tower + pos];
-  if (!group) return null;
-  let imgFloor = Math.max(3, Math.min(13, floor));
-  if (group === 4 && imgFloor > 12) imgFloor = 12;
-  return `${IMAGE_DIR_LOW}/${group}-${imgFloor}.jpg`;
+  const key = getImageKey(unit);
+  if (!key) return null;
+  return `${IMAGE_DIR_LOW}/${key}.jpg`;
 }
 
 const STATUS_LABELS = {
