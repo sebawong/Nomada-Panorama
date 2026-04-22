@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nomada Vistas - Configuración</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css">
+<script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--sage:#7d8e6e;--sage-light:#96a888;--charcoal:#1c1c1c;--cream:#e8e4de}
+body{background:#111;color:var(--cream);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh}
+
+header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 24px;background:var(--charcoal);border-bottom:1px solid rgba(255,255,255,.08);
+}
+header h1{font-size:18px;font-weight:400;letter-spacing:.5px}
+header a{color:var(--sage-light);text-decoration:none;font-size:14px}
+header a:hover{text-decoration:underline}
+
+.layout{display:flex;height:calc(100vh - 57px)}
+
+/* ── Left panel ── */
+.panel{
+  width:340px;min-width:340px;background:var(--charcoal);
+  border-right:1px solid rgba(255,255,255,.08);
+  overflow-y:auto;display:flex;flex-direction:column;
+}
+.section{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.06)}
+.section h2{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;color:var(--sage-light)}
+.field{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.field label{font-size:13px;color:rgba(255,255,255,.7)}
+.field input[type=number]{
+  width:70px;padding:6px 8px;border:1px solid rgba(255,255,255,.15);border-radius:4px;
+  background:rgba(255,255,255,.06);color:var(--cream);font-size:13px;text-align:center;
+}
+.field input[type=number]:focus{outline:none;border-color:var(--sage)}
+
+.btn{
+  padding:8px 16px;border:none;border-radius:6px;cursor:pointer;font-size:13px;
+  font-family:inherit;transition:background .2s;
+}
+.btn-primary{background:var(--sage);color:#fff}
+.btn-primary:hover{background:var(--sage-light)}
+.btn-secondary{background:rgba(255,255,255,.1);color:var(--cream)}
+.btn-secondary:hover{background:rgba(255,255,255,.18)}
+.btn-danger{background:#c45e2c;color:#fff}
+.btn-danger:hover{background:#d4703f}
+
+.actions{display:flex;gap:8px;margin-top:4px}
+
+/* ── Image grid ── */
+.grid-section{flex:1;overflow-y:auto;padding:16px 20px}
+.grid-section h2{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;color:var(--sage-light)}
+.image-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:6px}
+.img-thumb{
+  position:relative;aspect-ratio:2/1;border-radius:6px;overflow:hidden;cursor:pointer;
+  border:2px solid transparent;transition:border .2s;
+}
+.img-thumb:hover{border-color:rgba(255,255,255,.3)}
+.img-thumb.active{border-color:var(--sage)}
+.img-thumb.configured{border-color:rgba(125,142,110,.4)}
+.img-thumb img{width:100%;height:100%;object-fit:cover}
+.img-thumb .label{
+  position:absolute;bottom:0;left:0;right:0;padding:2px 4px;
+  background:rgba(0,0,0,.7);font-size:10px;text-align:center;
+}
+.img-thumb .check{
+  position:absolute;top:3px;right:3px;width:14px;height:14px;
+  background:var(--sage);border-radius:50%;display:none;
+  align-items:center;justify-content:center;font-size:9px;
+}
+.img-thumb.configured .check{display:flex}
+
+/* ── Viewer area ── */
+.viewer-area{flex:1;display:flex;flex-direction:column;position:relative;background:#000}
+#config-viewer{flex:1}
+.viewer-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px;background:rgba(22,22,22,.95);
+  border-top:1px solid rgba(255,255,255,.08);
+}
+.viewer-bar .info{font-size:13px;color:rgba(255,255,255,.6)}
+.viewer-bar .info strong{color:var(--cream)}
+.viewer-bar .coords{font-size:12px;color:rgba(255,255,255,.4);font-family:monospace}
+.viewer-empty{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  color:rgba(255,255,255,.3);font-size:15px;
+}
+
+/* Toast */
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  padding:10px 24px;border-radius:8px;background:var(--sage);color:#fff;
+  font-size:14px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;
+}
+.toast.show{opacity:1}
+
+@media(max-width:768px){
+  .layout{flex-direction:column}
+  .panel{width:100%;min-width:0;max-height:40vh;border-right:none;border-bottom:1px solid rgba(255,255,255,.08)}
+  .viewer-area{min-height:50vh}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Configuración de Vistas</h1>
+  <a href="/">← Volver al buscador</a>
+</header>
+
+<div class="layout">
+  <div class="panel">
+    <div class="section">
+      <h2>Límites de rotación</h2>
+      <div class="field">
+        <label>Pitch mín (vertical)</label>
+        <input type="number" id="cfg-minPitch" value="-60" min="-90" max="0" step="5">
+      </div>
+      <div class="field">
+        <label>Pitch máx (vertical)</label>
+        <input type="number" id="cfg-maxPitch" value="60" min="0" max="90" step="5">
+      </div>
+      <div class="field">
+        <label>Yaw mín (horizontal)</label>
+        <input type="number" id="cfg-minYaw" value="-180" min="-180" max="0" step="5">
+      </div>
+      <div class="field">
+        <label>Yaw máx (horizontal)</label>
+        <input type="number" id="cfg-maxYaw" value="180" min="0" max="180" step="5">
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" onclick="saveGlobal()">Guardar límites</button>
+        <button class="btn btn-secondary" onclick="resetGlobal()">Reset</button>
+      </div>
+    </div>
+
+    <div class="grid-section">
+      <h2>Rotación inicial por imagen</h2>
+      <p style="font-size:12px;color:rgba(255,255,255,.35);margin-bottom:10px">
+        Seleccioná una imagen, posicionala y tocá "Fijar rotación"
+      </p>
+      <div class="image-grid" id="image-grid"></div>
+    </div>
+  </div>
+
+  <div class="viewer-area">
+    <div class="viewer-empty" id="viewer-empty">Seleccioná una imagen para configurar</div>
+    <div id="config-viewer" style="display:none"></div>
+    <div class="viewer-bar" id="viewer-bar" style="display:none">
+      <div class="info">
+        Imagen: <strong id="bar-name">-</strong>
+      </div>
+      <div class="coords" id="bar-coords">yaw: 0° | pitch: 0°</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary" onclick="setInitialRotation()">Fijar rotación</button>
+        <button class="btn btn-danger" onclick="clearImageConfig()">Limpiar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const IMAGE_DIR = '../panoramas';
+const IMAGE_DIR_LOW = '../panoramas/low';
+const STORAGE_KEY = 'nomadaVistasConfig';
+
+// All image keys: group-floor
+const ALL_IMAGES = [];
+for (let g = 1; g <= 10; g++) {
+  const maxFloor = g === 4 ? 12 : 13;
+  for (let f = 3; f <= maxFloor; f++) {
+    ALL_IMAGES.push(`${g}-${f}`);
+  }
+}
+
+let config = loadConfig();
+let currentImage = null;
+let viewer = null;
+let coordsInterval = null;
+
+function defaultConfig() {
+  return {
+    global: { minPitch: -60, maxPitch: 60, minYaw: -180, maxYaw: 180 },
+    images: {}
+  };
+}
+
+function loadConfig() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return { ...defaultConfig(), ...parsed };
+    }
+  } catch(e) {}
+  return defaultConfig();
+}
+
+function saveConfig() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2000);
+}
+
+// ── Global limits ──
+function initGlobalFields() {
+  document.getElementById('cfg-minPitch').value = config.global.minPitch;
+  document.getElementById('cfg-maxPitch').value = config.global.maxPitch;
+  document.getElementById('cfg-minYaw').value = config.global.minYaw;
+  document.getElementById('cfg-maxYaw').value = config.global.maxYaw;
+}
+
+function saveGlobal() {
+  config.global.minPitch = parseInt(document.getElementById('cfg-minPitch').value) || -60;
+  config.global.maxPitch = parseInt(document.getElementById('cfg-maxPitch').value) || 60;
+  config.global.minYaw = parseInt(document.getElementById('cfg-minYaw').value) || -180;
+  config.global.maxYaw = parseInt(document.getElementById('cfg-maxYaw').value) || 180;
+  saveConfig();
+  toast('Límites guardados');
+  if (viewer && currentImage) openImage(currentImage);
+}
+
+function resetGlobal() {
+  config.global = defaultConfig().global;
+  saveConfig();
+  initGlobalFields();
+  toast('Límites reseteados');
+  if (viewer && currentImage) openImage(currentImage);
+}
+
+// ── Image grid ──
+function renderGrid() {
+  const grid = document.getElementById('image-grid');
+  grid.innerHTML = ALL_IMAGES.map(key => {
+    const configured = config.images[key] ? 'configured' : '';
+    const active = currentImage === key ? 'active' : '';
+    return `
+      <div class="img-thumb ${configured} ${active}" onclick="openImage('${key}')" title="${key}">
+        <img src="${IMAGE_DIR_LOW}/${key}.jpg" loading="lazy" alt="${key}">
+        <div class="label">${key}</div>
+        <div class="check">✓</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openImage(key) {
+  currentImage = key;
+  renderGrid();
+
+  document.getElementById('viewer-empty').style.display = 'none';
+  document.getElementById('config-viewer').style.display = 'block';
+  document.getElementById('viewer-bar').style.display = 'flex';
+  document.getElementById('bar-name').textContent = key;
+
+  if (viewer) { viewer.destroy(); viewer = null; }
+  if (coordsInterval) clearInterval(coordsInterval);
+
+  const savedYaw = config.images[key]?.yaw ?? 0;
+  const savedPitch = config.images[key]?.pitch ?? -5;
+
+  viewer = pannellum.viewer('config-viewer', {
+    type: 'equirectangular',
+    panorama: `${IMAGE_DIR}/${key}.jpg`,
+    autoLoad: true,
+    compass: false,
+    showControls: true,
+    mouseZoom: true,
+    hfov: 100,
+    minHfov: 40,
+    maxHfov: 120,
+    minPitch: config.global.minPitch,
+    maxPitch: config.global.maxPitch,
+    minYaw: config.global.minYaw,
+    maxYaw: config.global.maxYaw,
+    yaw: savedYaw,
+    pitch: savedPitch,
+    showFullscreenCtrl: false,
+    strings: { loadingLabel: 'Cargando...' },
+  });
+
+  coordsInterval = setInterval(() => {
+    if (!viewer) return;
+    try {
+      const y = viewer.getYaw().toFixed(1);
+      const p = viewer.getPitch().toFixed(1);
+      document.getElementById('bar-coords').textContent = `yaw: ${y}° | pitch: ${p}°`;
+    } catch(e) {}
+  }, 100);
+}
+
+function setInitialRotation() {
+  if (!viewer || !currentImage) return;
+  const yaw = Math.round(viewer.getYaw() * 10) / 10;
+  const pitch = Math.round(viewer.getPitch() * 10) / 10;
+  config.images[currentImage] = { yaw, pitch };
+  saveConfig();
+  renderGrid();
+  toast(`${currentImage}: yaw=${yaw}° pitch=${pitch}°`);
+}
+
+function clearImageConfig() {
+  if (!currentImage) return;
+  delete config.images[currentImage];
+  saveConfig();
+  renderGrid();
+  toast(`${currentImage}: configuración limpiada`);
+  openImage(currentImage);
+}
+
+// ── Init ──
+initGlobalFields();
+renderGrid();
+</script>
+</body>
+</html>

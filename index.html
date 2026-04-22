@@ -125,7 +125,7 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
 #info-card.visible{display:block;animation:cardIn .3s ease-out}
 @keyframes cardIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
-.card-top{display:flex;gap:14px;padding:16px 18px 14px}
+.card-top{display:flex;gap:10px;padding:16px 18px 14px;align-items:center}
 .card-info{flex:1;min-width:0}
 .card-info h2{font-size:16px;font-weight:600;letter-spacing:.3px;margin-bottom:2px}
 .card-info .card-sub{font-size:12px;color:rgba(255,255,255,.4);margin-bottom:10px}
@@ -174,6 +174,17 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
 }
 .btn-expand:hover{background:var(--sage-light)}
 .btn-expand:active{transform:scale(.98)}
+
+/* Card collapse toggle (mobile) */
+.card-toggle{
+  display:none;width:100%;padding:0;border:none;background:none;
+  cursor:pointer;color:rgba(255,255,255,.4);font-size:18px;
+  height:24px;line-height:24px;text-align:center;
+}
+.card-body{overflow:hidden;transition:max-height .3s ease,opacity .2s}
+#info-card.collapsed .card-body{max-height:0;opacity:0}
+#info-card.collapsed .card-toggle{border-top:none}
+#info-card:not(.collapsed) .card-body{max-height:500px;opacity:1}
 
 /* ═══ FULLSCREEN PANO OVERLAY ═══ */
 #fullscreen-overlay{
@@ -233,6 +244,7 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
   #info-card{
     bottom:12px;left:12px;right:12px;width:auto;max-width:none;
   }
+  .card-toggle{display:block}
   .card-plan{width:90px;height:72px}
   #fs-label{font-size:11px;padding:6px 14px;bottom:12px}
 }
@@ -314,23 +326,30 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
           <span id="c-amb"></span>
         </div>
       </div>
-      <div class="card-plan" id="card-plan-btn" title="Ver plano completo">
-        <img id="c-plan-img" alt="Plano">
-        <div class="plan-zoom">&#x1F50D;</div>
+      <button class="card-toggle" id="card-toggle" title="Expandir/colapsar">&#9650;</button>
+    </div>
+    <div class="card-body">
+      <div style="display:flex;gap:14px;padding:0 18px 14px">
+        <div class="card-plan" id="card-plan-btn" title="Ver plano completo" style="flex-shrink:0">
+          <img id="c-plan-img" alt="Plano">
+          <div class="plan-zoom">&#x1F50D;</div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+          <div class="card-actions" style="padding:0">
+            <button class="btn-expand" id="btn-fullscreen">Pantalla completa</button>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="card-data">
-      <div class="d-item"><span class="d-label">Cubierta</span><span class="d-val" id="c-cub"></span></div>
-      <div class="d-item"><span class="d-label">Semicub.</span><span class="d-val" id="c-semi"></span></div>
-      <div class="d-item"><span class="d-label">Amenities</span><span class="d-val" id="c-amen"></span></div>
-      <div class="d-item"><span class="d-label">Cocina</span><span class="d-val" id="c-coc"></span></div>
-    </div>
-    <div class="card-total">
-      <span>Superficie total</span>
-      <span id="c-total"></span>
-    </div>
-    <div class="card-actions">
-      <button class="btn-expand" id="btn-fullscreen">Pantalla completa</button>
+      <div class="card-data">
+        <div class="d-item"><span class="d-label">Cubierta</span><span class="d-val" id="c-cub"></span></div>
+        <div class="d-item"><span class="d-label">Semicub.</span><span class="d-val" id="c-semi"></span></div>
+        <div class="d-item"><span class="d-label">Amenities</span><span class="d-val" id="c-amen"></span></div>
+        <div class="d-item"><span class="d-label">Cocina</span><span class="d-val" id="c-coc"></span></div>
+      </div>
+      <div class="card-total">
+        <span>Superficie total</span>
+        <span id="c-total"></span>
+      </div>
     </div>
   </div>
 
@@ -360,6 +379,35 @@ let inlineViewer = null;
 let fsViewer = null;
 const IMAGE_DIR = 'panoramas';
 const IMAGE_DIR_LOW = 'panoramas/low';
+const isMobile = window.innerWidth <= 768;
+
+// Load viewer config from localStorage (set via /config page)
+function getViewerConfig() {
+  try {
+    const saved = localStorage.getItem('nomadaVistasConfig');
+    if (saved) return JSON.parse(saved);
+  } catch(e) {}
+  return { global: { minPitch: -60, maxPitch: 60, minYaw: -180, maxYaw: 180 }, images: {} };
+}
+function getImageConfig(imageKey) {
+  const cfg = getViewerConfig();
+  return {
+    minPitch: cfg.global.minPitch,
+    maxPitch: cfg.global.maxPitch,
+    minYaw: cfg.global.minYaw,
+    maxYaw: cfg.global.maxYaw,
+    yaw: cfg.images[imageKey]?.yaw ?? 0,
+    pitch: cfg.images[imageKey]?.pitch ?? -5,
+  };
+}
+function getImageKey(unit) {
+  const { tower, floor, pos } = parseUnit(unit.unit);
+  const group = POSITION_TO_GROUP[tower + pos];
+  if (!group) return null;
+  let imgFloor = Math.max(3, Math.min(13, floor));
+  if (group === 4 && imgFloor > 12) imgFloor = 12;
+  return `${group}-${imgFloor}`;
+}
 
 const SORT_MODES = [
   { key: 'default', label: 'A-Z', fn: (a,b) => { if(a.nucleo!==b.nucleo) return a.nucleo.localeCompare(b.nucleo); return (a.pisos||0)-(b.pisos||0)||a.unit.localeCompare(b.unit); }},
@@ -513,12 +561,18 @@ function selectUnit(code) {
     planImg.style.display = 'none';
   }
 
-  // Show card
+  // Show card (collapsed on mobile)
   const card = document.getElementById('info-card');
   card.classList.remove('visible');
-  // Force reflow for re-animation
   void card.offsetWidth;
   card.classList.add('visible');
+  if (isMobile) {
+    card.classList.add('collapsed');
+    document.getElementById('card-toggle').innerHTML = '&#9660;';
+  } else {
+    card.classList.remove('collapsed');
+    document.getElementById('card-toggle').innerHTML = '&#9650;';
+  }
 
   // Load inline panoramic
   loadInlinePanoramic();
@@ -552,6 +606,8 @@ function loadInlinePanoramic() {
   loading.innerHTML = '<div class="spinner"></div>Cargando vista...';
 
   // Load Pannellum directly with hi-res — low-res background shows while it loads
+  const imgKey = getImageKey(selectedUnit);
+  const imgCfg = imgKey ? getImageConfig(imgKey) : {};
   inlineViewer = pannellum.viewer('pano-container', {
     type: 'equirectangular',
     panorama: hiPath,
@@ -559,14 +615,18 @@ function loadInlinePanoramic() {
     compass: false,
     showControls: false,
     mouseZoom: true,
-    hfov: 110,
+    hfov: isMobile ? 90 : 110,
     minHfov: 50,
     maxHfov: 120,
+    minPitch: imgCfg.minPitch ?? -60,
+    maxPitch: imgCfg.maxPitch ?? 60,
+    minYaw: imgCfg.minYaw ?? -180,
+    maxYaw: imgCfg.maxYaw ?? 180,
     autoRotate: -1.5,
     autoRotateInactivityDelay: 2000,
     friction: 0.15,
-    yaw: 0,
-    pitch: -5,
+    yaw: imgCfg.yaw ?? 0,
+    pitch: imgCfg.pitch ?? -5,
     showFullscreenCtrl: false,
     strings: { loadingLabel: '' },
   });
@@ -602,6 +662,8 @@ function openFullscreen() {
     fsPano.style.backgroundPosition = 'center';
   }
 
+  const imgKey = getImageKey(selectedUnit);
+  const imgCfg = imgKey ? getImageConfig(imgKey) : {};
   fsViewer = pannellum.viewer('fullscreen-pano', {
     type: 'equirectangular',
     panorama: hiPath,
@@ -610,6 +672,10 @@ function openFullscreen() {
     showControls: true,
     mouseZoom: true,
     hfov, minHfov: 40, maxHfov: 120,
+    minPitch: imgCfg.minPitch ?? -60,
+    maxPitch: imgCfg.maxPitch ?? 60,
+    minYaw: imgCfg.minYaw ?? -180,
+    maxYaw: imgCfg.maxYaw ?? 180,
     autoRotate: -1.5,
     autoRotateInactivityDelay: 3000,
     friction: 0.15,
@@ -663,6 +729,14 @@ document.getElementById('card-plan-btn').addEventListener('click', openPlanModal
 // Plan modal close on click anywhere
 document.getElementById('plan-modal').addEventListener('click', () => {
   document.getElementById('plan-modal').classList.remove('visible');
+});
+
+// Card collapse toggle (mobile)
+document.getElementById('card-toggle').addEventListener('click', () => {
+  const card = document.getElementById('info-card');
+  const btn = document.getElementById('card-toggle');
+  card.classList.toggle('collapsed');
+  btn.innerHTML = card.classList.contains('collapsed') ? '&#9660;' : '&#9650;';
 });
 
 // Mobile toggle
